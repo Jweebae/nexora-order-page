@@ -170,12 +170,71 @@
 
   <footer>© Nexora — جميع الحقوق محفوظة</footer>
 
-  <script>
-    document.getElementById("order-form").addEventListener("submit", function(event) {
-      event.preventDefault();
-      document.getElementById("status").textContent =
-        "هذه نسخة تجريبية فقط. نظام تسجيل الطلبات لم يُربط بعد.";
-    });
-  </script>
+ 
+<script>
+  // Replace these two placeholders with your own Supabase values.
+  const SUPABASE_URL = "https://dokyfulqacjbdsubmvop.supabase.co/rest/v1/";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_7Nc4I-KNZ0FetDJuc2jp9A_GsRLjSoV";
+
+  const form = document.getElementById("order-form");
+  const status = document.getElementById("status");
+  const submitButton = form.querySelector('button[type="submit"]');
+
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    if (submitButton.disabled) return;
+
+    const originalButtonText = submitButton.textContent;
+    submitButton.disabled = true;
+    submitButton.textContent = "جاري إرسال الطلب...";
+    status.textContent = "";
+    status.style.color = "#171717";
+
+    const payload = {
+      customer_name: form.elements["name"].value.trim(),
+      phone: form.elements["phone"].value.trim(),
+      wilaya: form.elements["wilaya"].value.trim(),
+      commune: form.elements["commune"].value.trim(),
+      address: form.elements["address"].value.trim(),
+      quantity: Number(form.elements["quantity"].value)
+    };
+
+    try {
+      const response = await fetch(
+        `${SUPABASE_URL.replace(/\/$/, "")}/functions/v1/create-order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_PUBLISHABLE_KEY
+          },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "تعذر تسجيل الطلب.");
+      }
+
+      status.style.color = "#16803c";
+      status.textContent =
+        `تم تسجيل طلبك بنجاح! رقم الطلب: ${result.order_id}. سيتواصل معك فريقنا لتأكيد الطلب.`;
+
+      form.reset();
+    } catch (error) {
+      console.error("Nexora order submission failed:", error);
+      status.style.color = "#b42318";
+      status.textContent =
+        "ما قدرناش نسجلو الطلب. تحقق من الإنترنت وحاول مرة أخرى.";
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = originalButtonText;
+    }
+  });
+</script>
+
 </body>
 </html>
