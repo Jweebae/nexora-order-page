@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0d0a3f">
+  <title>Nexora | الإدارة</title>
+  <link rel="icon" type="image/webp" href="images/logo.webp">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0d0a3f; --navy-2: #1a1666; --cyan: #22d3ee; --yellow: #ffd21f;
+      --red: #d92d20; --green: #16803c; --bg: #f3f5fb; --ink: #14142b; --muted: #5f6477; --line: #dfe3ee;
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; font-family: "Cairo", Tahoma, Arial, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; }
+    button, input, select, textarea { font: inherit; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 14px; }
+
+    header { position: sticky; top: 0; z-index: 10; background: var(--navy); color: #fff; }
+    header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 10px; height: 56px; }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; }
+    .brand img { width: 32px; height: 32px; border-radius: 6px; }
+    .hbtns { display: flex; gap: 8px; }
+    .btn {
+      border: 0; border-radius: 9px; padding: 7px 14px; cursor: pointer; font-weight: 700;
+      background: var(--yellow); color: var(--navy);
+    }
+    .btn.ghost { background: transparent; color: #fff; border: 1px solid #ffffff55; }
+    .btn.small { padding: 5px 12px; font-size: 14px; }
+    .btn:disabled { opacity: .6; cursor: wait; }
+
+    /* login */
+    .login { max-width: 380px; margin: 60px auto; background: #fff; border-radius: 16px; padding: 26px 20px; border: 1px solid var(--line); }
+    .login h1 { margin: 0 0 4px; font-size: 22px; }
+    .login p { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
+    label { display: block; font-weight: 600; font-size: 14px; margin: 12px 0 4px; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1.5px solid var(--line); border-radius: 9px; background: #fff; color: var(--ink); }
+    input:focus, select:focus, textarea:focus { outline: 3px solid #22d3ee55; border-color: var(--cyan); }
+    .login .btn { width: 100%; margin-top: 18px; padding: 11px; font-size: 17px; }
+    .msg { margin: 10px 0 0; font-weight: 600; font-size: 14px; }
+    .msg.err { color: var(--red); }
+
+    /* stats */
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 16px 0 10px; }
+    .toolbar select, .toolbar input { width: auto; flex: 1 1 160px; }
+    .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    @media (min-width: 720px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+    .stat { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+    .stat b { display: block; font-size: 24px; color: var(--navy); line-height: 1.2; }
+    .stat small { color: var(--muted); font-size: 13px; }
+    .stat .sub { color: var(--muted); font-size: 12px; }
+    bdi.n { direction: ltr; unicode-bidi: isolate; }
+
+    .tabs { display: flex; gap: 6px; overflow-x: auto; padding: 12px 0 6px; }
+    .tab {
+      white-space: nowrap; border: 1.5px solid var(--line); background: #fff; border-radius: 999px;
+      padding: 4px 12px; cursor: pointer; font-weight: 600; font-size: 14px; color: var(--ink);
+    }
+    .tab[aria-pressed="true"] { background: var(--navy); color: #fff; border-color: var(--navy); }
+    .tab .c { opacity: .7; margin-inline-start: 4px; }
+
+    /* orders */
+    .list { display: grid; gap: 10px; padding-bottom: 40px; }
+    @media (min-width: 900px) { .list { grid-template-columns: 1fr 1fr; } }
+    .order { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; border-inline-start: 5px solid var(--line); }
+    .order[data-status="new"] { border-inline-start-color: var(--cyan); }
+    .order[data-status="no_answer"] { border-inline-start-color: #f59e0b; }
+    .order[data-status="confirmed"] { border-inline-start-color: #2563eb; }
+    .order[data-status="shipped"] { border-inline-start-color: #7c3aed; }
+    .order[data-status="delivered"] { border-inline-start-color: var(--green); }
+    .order[data-status="returned"], .order[data-status="cancelled"] { border-inline-start-color: var(--red); }
+    .top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+    .top .name { font-weight: 800; font-size: 17px; }
+    .top .meta { color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .rows { margin: 6px 0; font-size: 14px; display: grid; gap: 2px; }
+    .rows span { color: var(--muted); }
+    .pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 0 8px; border-radius: 999px; background: #eef1f8; }
+    .pill.home { background: #e0f2fe; } .pill.desk { background: #fef3c7; }
+    .actions { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+    .actions a, .actions button {
+      text-decoration: none; border: 1.5px solid var(--line); background: #fff; color: var(--ink);
+      border-radius: 9px; padding: 4px 10px; font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+    .edit { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .edit textarea { grid-column: 1 / -1; min-height: 40px; resize: vertical; }
+    .edit label { margin: 0 0 2px; font-size: 12px; color: var(--muted); }
+    .saved { font-size: 12px; color: var(--green); font-weight: 600; min-height: 18px; }
+    .saved.err { color: var(--red); }
+    .empty { text-align: center; color: var(--muted); padding: 40px 0; }
+    .toast { position: fixed; bottom: 16px; inset-inline: 16px; margin: auto; max-width: 360px; background: var(--ink); color: #fff;
+      padding: 10px 14px; border-radius: 10px; text-align: center; font-weight: 600; z-index: 50; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand"><img src="images/logo.webp" alt="" width="32" height="32">NEXORA · الإدارة</div>
+    <div class="hbtns" id="hbtns" hidden>
+      <button class="btn small" id="refresh" type="button">تحديث</button>
+      <button class="btn small ghost" id="logout" type="button">خروج</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ LOGIN ============ -->
+<section class="login" id="login-view" hidden>
+  <h1>تسجيل الدخول</h1>
+  <p>هذه الصفحة خاصة بإدارة Nexora.</p>
+  <form id="login-form">
+    <label for="email">البريد الإلكتروني</label>
+    <input id="email" type="email" autocomplete="username" required dir="ltr">
+    <label for="password">كلمة السر</label>
+    <input id="password" type="password" autocomplete="current-password" required dir="ltr">
+    <button class="btn" type="submit" id="login-btn">دخول</button>
+    <p class="msg err" id="login-msg" role="alert"></p>
+  </form>
+</section>
+
+<!-- ============ DASHBOARD ============ -->
+<main class="wrap" id="dash-view" hidden>
+  <div class="toolbar">
+    <select id="period" aria-label="الفترة">
+      <option value="1">اليوم</option>
+      <option value="7" selected>آخر 7 أيام</option>
+      <option value="30">آخر 30 يوم</option>
+      <option value="0">الكل</option>
+    </select>
+    <input id="search" type="search" placeholder="بحث: اسم، هاتف، بلدية، رقم الطلب…" aria-label="بحث">
+  </div>
+
+  <div class="stats" id="stats"></div>
+  <div class="tabs" id="tabs" role="toolbar" aria-label="الحالة"></div>
+  <div class="list" id="list"></div>
+</main>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script>
+const SUPABASE_URL = "https://dokyfulqacjbdsubmvop.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_7Nc4I-KNZ0FetDJuc2jp9A_GsRLjSoV";
+
+// Same prices as the order page (used only for old orders saved without total_price)
+const PRICES = { 1: 3700, 2: 6500, 3: 9750, 4: 13000, 5: 16250 };
+
+const STATUSES = [
+  ["new",       "جديد"],
+  ["no_answer", "لم يرد"],
+  ["confirmed", "مؤكد"],
+  ["shipped",   "تم الشحن"],
+  ["delivered", "تم التسليم"],
+  ["returned",  "مرتجع (رفض)"],
+  ["cancelled", "ملغى"]
+];
+const LABEL = Object.fromEntries(STATUSES);
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const $ = s => document.querySelector(s);
+const fmt = n => Number(n || 0).toLocaleString("fr-DZ").replace(/[   ]/g, " ");
+let orders = [];
+let currentTab = "all";
+
+/* ---------- small DOM helper (all customer data goes in as text, never HTML) ---------- */
+function el(tag, attrs = {}, ...children) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") e.className = v;
+    else if (k === "text") e.textContent = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v);
+  }
+  for (const c of children) if (c != null) e.append(c);
+  return e;
+}
+function money(n) { const f = document.createDocumentFragment(); f.append(el("bdi", { class: "n", text: fmt(n) }), " دج"); return f; }
+function toast(text) {
+  const t = $("#toast"); t.textContent = text; t.hidden = false;
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 2500);
+}
+const totalOf = o => o.total_price ?? PRICES[o.quantity] ?? 0;
+
+/* ---------- views ---------- */
+function show(view) {
+  $("#login-view").hidden = view !== "login";
+  $("#dash-view").hidden = view !== "dash";
+  $("#hbtns").hidden = view !== "dash";
+}
+
+async function start() {
+  const { data } = await db.auth.getSession();
+  if (!data.session) return show("login");
+  const { data: ok, error } = await db.rpc("is_admin");
+  if (error || !ok) {
+    await db.auth.signOut();
+    $("#login-msg").textContent = "هذا الحساب ليس له صلاحية الدخول.";
+    return show("login");
+  }
+  show("dash");
+  await load();
+}
+
+$("#login-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = $("#login-btn");
+  btn.disabled = true; $("#login-msg").textContent = "";
+  const { error } = await db.auth.signInWithPassword({
+    email: $("#email").value.trim(), password: $("#password").value
+  });
+  btn.disabled = false;
+  if (error) { $("#login-msg").textContent = "البريد أو كلمة السر غير صحيحة."; return; }
+  $("#password").value = "";
+  start();
+});
+$("#logout").addEventListener("click", async () => { await db.auth.signOut(); orders = []; show("login"); });
+$("#refresh").addEventListener("click", () => load(true));
+$("#period").addEventListener("change", render);
+$("#search").addEventListener("input", render);
+
+/* ---------- data ---------- */
+async function load(manual = false) {
+  const { data, error } = await db.from("orders").select("*")
+    .order("created_at", { ascending: false }).range(0, 4999);
+  if (error) { toast("تعذر تحميل الطلبات: " + error.message); return; }
+  orders = data || [];
+  render();
+  if (manual) toast("تم التحديث");
+}
+setInterval(() => { if (!$("#dash-view").hidden && !document.querySelector(".order textarea:focus, .order input:focus")) load(); }, 60_000);
+
+async function save(order, changes, statusEl) {
+  statusEl.className = "saved"; statusEl.textContent = "جاري الحفظ…";
+  const { data, error } = await db.from("orders").update(changes).eq("id", order.id).select().single();
+  if (error) { statusEl.className = "saved err"; statusEl.textContent = "لم يتم الحفظ: " + error.message; return false; }
+  Object.assign(order, data);
+  statusEl.textContent = "تم الحفظ ✓";
+  return true;
+}
+
+/* ---------- filtering ---------- */
+function inPeriod(o) {
+  const days = Number($("#period").value);
+  if (!days) return true;
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - (days - 1));
+  return new Date(o.created_at) >= start;
+}
+function matches(o) {
+  const q = $("#search").value.trim().toLowerCase();
+  if (!q) return true;
+  return [o.id, o.customer_name, o.phone, o.wilaya, o.commune, o.address, o.tracking_number, o.notes]
+    .some(v => String(v ?? "").toLowerCase().includes(q));
+}
+
+/* ---------- render ---------- */
+function render() {
+  const period = orders.filter(inPeriod);
+  renderStats(period);
+  renderTabs(period);
+  const shown = period.filter(o => (currentTab === "all" || o.status === currentTab) && matches(o));
+  const list = $("#list");
+  list.textContent = "";
+  if (!shown.length) { list.append(el("p", { class: "empty", text: "لا توجد طلبات هنا." })); return; }
+  shown.forEach(o => list.append(orderCard(o)));
+}
+
+function renderStats(p) {
+  const count = s => p.filter(o => o.status === s).length;
+  const decided = p.filter(o => !["new", "no_answer"].includes(o.status)).length;   // we got an answer
+  const confirmedish = ["confirmed", "shipped", "delivered", "returned"].reduce((a, s) => a + count(s), 0);
+  const finished = count("delivered") + count("returned");
+  const revenue = p.filter(o => o.status === "delivered").reduce((a, o) => a + totalOf(o), 0);
+  const pct = (a, b) => b ? Math.round(a * 100 / b) + "%" : "—";
+
+  const stat = (value, label, sub) => el("div", { class: "stat" },
+    el("b", {}, value), el("small", { text: label }), sub ? el("div", { class: "sub", text: sub }) : null);
+
+  const box = $("#stats");
+  box.textContent = "";
+  box.append(
+    stat(String(p.length), "عدد الطلبات", `${count("new") + count("no_answer")} في انتظار الاتصال`),
+    stat(pct(confirmedish, decided), "نسبة التأكيد", `${confirmedish} مؤكد من ${decided}`),
+    stat(pct(count("delivered"), finished), "نسبة التسليم", `${count("delivered")} سُلّم، ${count("returned")} مرتجع`),
+    stat(money(revenue), "المداخيل (المُسلّمة فقط)", `${p.filter(o => o.status === "delivered").reduce((a, o) => a + o.quantity, 0)} قطعة`)
+  );
+}
+
+function renderTabs(p) {
+  const tabs = $("#tabs");
+  tabs.textContent = "";
+  [["all", "الكل"], ...STATUSES].forEach(([key, label]) => {
+    const n = key === "all" ? p.length : p.filter(o => o.status === key).length;
+    tabs.append(el("button", {
+      class: "tab", type: "button", "aria-pressed": String(currentTab === key),
+      onclick: () => { currentTab = key; render(); }
+    }, label, el("span", { class: "c", text: `(${n})` })));
+  });
+}
+
+function orderCard(o) {
+  const date = new Date(o.created_at);
+  const when = date.toLocaleDateString("fr-FR") + " " + date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false });
+  const intl = "213" + String(o.phone).replace(/^0/, "");
+  const delivery = o.delivery_type === "desk"
+    ? el("span", { class: "pill desk", text: "مكتب التوصيل" })
+    : el("span", { class: "pill home", text: "إلى المنزل" });
+
+  const savedEl = el("div", { class: "saved" });
+  const statusSel = el("select", { "aria-label": "الحالة" });
+  STATUSES.forEach(([k, l]) => { const op = new Option(l, k); if (k === o.status) op.selected = true; statusSel.add(op); });
+  const tracking = el("input", { value: o.tracking_number ?? "", placeholder: "رقم التتبع ZR", dir: "ltr" });
+  const notes = el("textarea", { placeholder: "ملاحظات (مثلاً: اتصلت مرتين، لم يرد)" });
+  notes.value = o.notes ?? "";
+
+  const card = el("article", { class: "order", "data-status": o.status });
+  statusSel.addEventListener("change", async () => {
+    if (await save(o, { status: statusSel.value }, savedEl)) { card.dataset.status = o.status; renderStats(orders.filter(inPeriod)); renderTabs(orders.filter(inPeriod)); }
+    else statusSel.value = o.status;
+  });
+  tracking.addEventListener("change", () => save(o, { tracking_number: tracking.value.trim() || null }, savedEl));
+  notes.addEventListener("change", () => save(o, { notes: notes.value.trim() || null }, savedEl));
+
+  const zrText = [
+    `Nom: ${o.customer_name}`, `Tél: ${o.phone}`, `Wilaya: ${o.wilaya}`, `Commune: ${o.commune}`,
+    o.delivery_type === "desk" ? "Livraison: Stop desk" : `Livraison: Domicile — ${o.address}`,
+    `Produit: Lampe COBA CB-2072-1 x${o.quantity}`, `Montant: ${totalOf(o)} DA + livraison`
+  ].join("\n");
+
+  card.append(
+    el("div", { class: "top" },
+      el("div", { class: "name", text: o.customer_name }),
+      el("bdi", { class: "meta n", text: `#${o.id} · ${when}` })),
+    el("div", { class: "rows" },
+      el("div", {}, el("span", { text: "الهاتف: " }), el("bdi", { class: "n", text: o.phone })),
+      el("div", {}, el("span", { text: "العنوان: " }), `${o.wilaya} · ${o.commune} `, delivery),
+      o.delivery_type !== "desk" ? el("div", {}, el("span", { text: "التفاصيل: " }), o.address) : null,
+      el("div", {}, el("span", { text: "الطلب: " }), `${o.quantity} × مصباح · `, money(totalOf(o)), " + التوصيل")),
+    el("div", { class: "actions" },
+      el("a", { href: `tel:${o.phone}`, text: "📞 اتصال" }),
+      el("a", { href: `https://wa.me/${intl}`, target: "_blank", rel: "noopener", text: "💬 واتساب" }),
+      el("button", { type: "button", text: "📋 نسخ لـ ZR", onclick: async () => {
+        try { await navigator.clipboard.writeText(zrText); toast("تم النسخ"); }
+        catch { toast("تعذر النسخ"); }
+      } })),
+    el("div", { class: "edit" },
+      el("div", {}, el("label", { text: "الحالة" }), statusSel),
+      el("div", {}, el("label", { text: "رقم التتبع" }), tracking),
+      notes),
+    savedEl
+  );
+  return card;
+}
+
+start();
+</script>
+</body>
+</html>

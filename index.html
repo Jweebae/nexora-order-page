@@ -493,6 +493,16 @@ track("ViewContent", "ViewContent", { content_name: "COBA CB-2072-1", value: UNI
 document.querySelectorAll("[data-track]").forEach(a =>
   a.addEventListener("click", () => track("InitiateCheckout", "ClickButton")));
 
+/* ---------- hidden admin entrance: tap the header logo 5 times within 3 seconds ---------- */
+(() => {
+  let taps = [];
+  $(".brand img").addEventListener("click", () => {
+    const now = Date.now();
+    taps = taps.filter(t => now - t < 3000).concat(now);
+    if (taps.length >= 5) location.href = "admin.html";
+  });
+})();
+
 /* ---------- gallery ---------- */
 const mainImg = $("#main-img");
 const thumbs = $("#thumbs");
