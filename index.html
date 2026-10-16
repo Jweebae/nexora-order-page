@@ -94,7 +94,7 @@
     }
     .offer b { color: var(--yellow); }
     /* numbers like "3 700" must stay left-to-right inside Arabic text */
-    #price-two, #price-save, #sticky-price, .summary span:last-child { direction: ltr; unicode-bidi: isolate; }
+    #price-two, #price-save, #sticky-price, bdi.n { direction: ltr; unicode-bidi: isolate; }
     .delivery-note { color: #c9ccea; font-size: 14px; margin: 6px 0 16px; }
     .bullets { list-style: none; padding: 0; margin: 0 0 22px; display: grid; gap: 6px; }
     .bullets li { padding-inline-start: 26px; position: relative; }
@@ -523,19 +523,21 @@ if (CONFIG.PRICES[2]) {
 if (CONFIG.DELIVERY_FEE !== null) {
   $("#delivery-note").textContent = CONFIG.DELIVERY_FEE === 0 ? " · توصيل مجاني" : ` · التوصيل ${fmt(CONFIG.DELIVERY_FEE)} دج`;
 }
+// only the number is forced left-to-right, the Arabic words around it stay right-to-left
+const money = n => `<bdi class="n">${fmt(n)}</bdi> دج`;
 function updateSummary() {
   const q = Number(qtySel.value) || 1;
   const items = priceFor(q);
   const save = UNIT * q - items;
-  $("#sum-items").textContent = `${fmt(items)} دج`;
+  $("#sum-items").innerHTML = money(items);
   $("#sum-save-row").hidden = save <= 0;
-  $("#sum-save").textContent = `${fmt(save)} دج`;
+  $("#sum-save").innerHTML = money(save);
   if (CONFIG.DELIVERY_FEE === null) {
     $("#sum-delivery").textContent = "يُحدَّد عند التأكيد";
-    $("#sum-total").textContent = `${fmt(items)} دج + التوصيل`;
+    $("#sum-total").innerHTML = `${money(items)} + التوصيل`;
   } else {
-    $("#sum-delivery").textContent = CONFIG.DELIVERY_FEE === 0 ? "مجاني" : `${fmt(CONFIG.DELIVERY_FEE)} دج`;
-    $("#sum-total").textContent = `${fmt(items + CONFIG.DELIVERY_FEE)} دج`;
+    $("#sum-delivery").innerHTML = CONFIG.DELIVERY_FEE === 0 ? "مجاني" : money(CONFIG.DELIVERY_FEE);
+    $("#sum-total").innerHTML = money(items + CONFIG.DELIVERY_FEE);
   }
 }
 updateSummary();
@@ -628,7 +630,8 @@ const rules = {
   wilaya:  () => wilayaSel.value ? "" : "اختر الولاية",
   commune: () => !wilayaSel.value ? "اختر الولاية أولاً" : (communeSel.value ? "" : "اختر البلدية"),
   delivery: () => deliveryValue() ? "" : "اختر طريقة التوصيل: إلى المنزل أو إلى مكتب التوصيل",
-  address: () => deliveryValue() !== "home" || form.elements["address"].value.trim().length >= 8
+  // measured exactly like the server does (spaces and line breaks collapsed)
+  address: () => deliveryValue() !== "home" || form.elements["address"].value.replace(/\s+/g, " ").trim().length >= 8
                  ? "" : "أدخل العنوان بالتفصيل (الحي، الشارع...)"
 };
 const fieldEl = f => f === "delivery" ? $(".choices") : form.elements[f];
@@ -710,11 +713,10 @@ form.addEventListener("submit", async function (event) {
     phone: cleanPhone(phoneInput.value),
     wilaya: wilayaSel.value,
     commune: communeSel.value,
-    // the orders table has no delivery-type column yet, so it travels inside the address
-    address: deliveryValue() === "home"
-      ? `[توصيل إلى المنزل] ${form.elements["address"].value.trim()}`
-      : "[توصيل إلى مكتب التوصيل - Stop desk]",
-    quantity: Number(qtySel.value)
+    delivery_type: deliveryValue(),
+    address: deliveryValue() === "home" ? form.elements["address"].value.trim() : "",
+    quantity: Number(qtySel.value),
+    website: form.elements["website"].value   // bot trap, always empty for real customers
   };
 
   try {
@@ -726,8 +728,29 @@ form.addEventListener("submit", async function (event) {
         body: JSON.stringify(payload)
       }
     );
-    const result = await response.json();
-    if (!response.ok || !result.success) throw new Error(result.error || "order failed");
+    const result = await response.json().catch(() => ({}));
+    if (response.status === 429 && result.error !== "Duplicate order") {
+      // server spam brake: many orders in a few minutes
+      statusEl.style.color = "#b42318";
+      statusEl.textContent = "ضغط كبير على الطلبات حاليًا. حاول مرة أخرى بعد بضع دقائق.";
+      submitBtn.disabled = false;
+      submitBtn.textContent = original;
+      return;
+    }
+    if (response.status === 429) {
+      // this phone number already ordered a few minutes ago: don't create a second order
+      statusEl.style.color = "#16803c";
+      statusEl.textContent = "طلبك مسجل عندنا من قبل بهذا الرقم، سنتصل بك قريبًا لتأكيده. لا داعي لإعادة الطلب.";
+      submitBtn.disabled = false;
+      submitBtn.textContent = original;
+      return;
+    }
+    if (!response.ok || !result.success) {
+      const err = new Error(result.error || `HTTP ${response.status}`);
+      err.server = true;   // we reached the server, so it's not an internet problem
+      err.field = result.field;
+      throw err;
+    }
 
     try { localStorage.setItem(LAST_KEY, String(Date.now())); } catch (_) {}
     track("Purchase", "PlaceAnOrder", { value: priceFor(payload.quantity), currency: "DZD", quantity: payload.quantity });
@@ -735,7 +758,13 @@ form.addEventListener("submit", async function (event) {
   } catch (error) {
     console.error("Nexora order submission failed:", error);
     statusEl.style.color = "#b42318";
-    statusEl.textContent = "ما قدرناش نسجلو الطلب. تحقق من الإنترنت وحاول مرة أخرى.";
+    if (error.field && rules[error.field]) {
+      setError(error.field, "هذه المعلومة غير صحيحة، تحقق منها");
+      fieldEl(error.field).scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    statusEl.textContent = error.server
+      ? "تعذر تسجيل الطلب. تحقق من معلوماتك وحاول مرة أخرى، أو راسلنا على صفحتنا في فيسبوك."
+      : "ما قدرناش نسجلو الطلب. تحقق من الإنترنت وحاول مرة أخرى.";
     submitBtn.disabled = false;
     submitBtn.textContent = original;
   }
