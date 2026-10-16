@@ -763,7 +763,7 @@ form.addEventListener("submit", async function (event) {
       fieldEl(error.field).scrollIntoView({ behavior: "smooth", block: "center" });
     }
     statusEl.textContent = error.server
-      ? "تعذر تسجيل الطلب. تحقق من معلوماتك وحاول مرة أخرى، أو راسلنا على صفحتنا في فيسبوك."
+      ? `تعذر تسجيل الطلب. تحقق من معلوماتك وحاول مرة أخرى، أو راسلنا على صفحتنا في فيسبوك. [${error.message}]`
       : "ما قدرناش نسجلو الطلب. تحقق من الإنترنت وحاول مرة أخرى.";
     submitBtn.disabled = false;
     submitBtn.textContent = original;
