@@ -1,240 +1,745 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#111111">
-  <title>Nexora | اطلب منتجك</title>
-  <meta name="description" content="اكتشف منتجات Nexora واطلب بكل سهولة.">
+  <meta name="theme-color" content="#0d0a3f">
+  <title>Nexora | مصباح COBA LED القوي CB-2072-1</title>
+  <meta name="description" content="مصباح COBA LED من الألمنيوم، بطارية 10800mAh ومدى إضاءة حقيقي يصل إلى 1000م. 3700 دج، وقطعتان بـ 6500 دج. الدفع عند الاستلام.">
+  <link rel="icon" type="image/webp" href="images/logo.webp">
+  <meta property="og:title" content="Nexora | مصباح COBA LED القوي">
+  <meta property="og:description" content="بطارية 10800mAh، مدى حقيقي 1000م. 3700 دج فقط، الدفع عند الاستلام.">
+  <meta property="og:image" content="images/torch-4.webp">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --navy: #0d0a3f;
+      --navy-2: #1a1666;
+      --cyan: #22d3ee;
+      --yellow: #ffd21f;
+      --red: #d92d20;
+      --green: #16803c;
+      --bg: #f3f5fb;
+      --ink: #14142b;
+      --muted: #5f6477;
+      --line: #dfe3ee;
+    }
     * { box-sizing: border-box; }
-
+    [hidden] { display: none !important; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      color: #171717;
+      font-family: "Cairo", Tahoma, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
       line-height: 1.7;
+      padding-bottom: 76px; /* room for sticky bar */
     }
+    img { max-width: 100%; height: auto; display: block; }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
 
+    /* ---------- header ---------- */
     header {
-      background: #111;
-      color: white;
-      padding: 18px 20px;
-      text-align: center;
+      position: sticky; top: 0; z-index: 20;
+      background: var(--navy);
+      color: #fff;
+    }
+    header .wrap {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 58px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; letter-spacing: 1px; }
+    .brand img { width: 38px; height: 38px; border-radius: 8px; }
+    header a.mini {
+      color: var(--navy); background: var(--yellow); text-decoration: none;
+      font-weight: 800; font-size: 14px; padding: 6px 16px; border-radius: 999px;
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 27px;
-      letter-spacing: 1px;
+    /* ---------- hero ---------- */
+    .hero {
+      background: radial-gradient(circle at 80% 0%, var(--navy-2), var(--navy) 70%);
+      color: #fff;
+      padding: 26px 0 38px;
+    }
+    .hero .wrap { display: grid; gap: 24px; }
+    @media (min-width: 820px) {
+      .hero .wrap { grid-template-columns: 1fr 1fr; align-items: center; gap: 44px; }
+      body { padding-bottom: 0; }
+      .sticky-cta { display: none !important; }
+    }
+    .gallery .main {
+      border-radius: 18px; overflow: hidden; background: #000;
+      aspect-ratio: 4 / 5; box-shadow: 0 12px 40px #0008;
+    }
+    .gallery .main img { width: 100%; height: 100%; object-fit: cover; }
+    .thumbs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 10px; }
+    .thumbs button {
+      padding: 0; margin: 0; border: 2px solid transparent; border-radius: 10px;
+      overflow: hidden; background: #000; cursor: pointer; aspect-ratio: 4/5;
+      opacity: .65; transition: opacity .15s;
+    }
+    .thumbs button[aria-current="true"] { border-color: var(--cyan); opacity: 1; }
+    .thumbs img { width: 100%; height: 100%; object-fit: cover; }
+
+    .hero h1 { margin: 0 0 6px; font-size: clamp(26px, 5vw, 38px); line-height: 1.3; font-weight: 800; }
+    .hero p.lead { margin: 0 0 16px; color: #c9ccea; }
+    .price { display: flex; align-items: baseline; gap: 10px; margin: 6px 0 4px; }
+    .price strong { direction: ltr; unicode-bidi: isolate; font-size: 38px; color: var(--yellow); font-weight: 800; line-height: 1; }
+    .price span { color: #c9ccea; font-size: 14px; }
+    .offer {
+      display: inline-block; margin: 6px 0 4px; padding: 6px 14px; border-radius: 10px;
+      background: #22d3ee1f; border: 1px dashed #22d3ee88; color: #e9fbff; font-weight: 600; font-size: 15px;
+    }
+    .offer b { color: var(--yellow); }
+    /* numbers like "3 700" must stay left-to-right inside Arabic text */
+    #price-two, #price-save, #sticky-price, .summary span:last-child { direction: ltr; unicode-bidi: isolate; }
+    .delivery-note { color: #c9ccea; font-size: 14px; margin: 6px 0 16px; }
+    .bullets { list-style: none; padding: 0; margin: 0 0 22px; display: grid; gap: 6px; }
+    .bullets li { padding-inline-start: 26px; position: relative; }
+    .bullets li::before {
+      content: "✓"; position: absolute; inset-inline-start: 0; top: 0;
+      color: var(--cyan); font-weight: 800;
+    }
+    .cta {
+      display: block; width: 100%; text-align: center; text-decoration: none; border: 0; cursor: pointer;
+      background: var(--yellow); color: var(--navy);
+      font: inherit; font-weight: 800; font-size: 19px;
+      padding: 14px 20px; border-radius: 12px;
+      box-shadow: 0 6px 0 #b8940a;
+      transition: transform .1s, box-shadow .1s;
+    }
+    .cta:active { transform: translateY(3px); box-shadow: 0 3px 0 #b8940a; }
+
+    /* ---------- sections ---------- */
+    section.block { padding: 36px 0 6px; }
+    h2.title { margin: 0 0 18px; font-size: 24px; font-weight: 800; text-align: center; }
+    h2.title::after {
+      content: ""; display: block; width: 46px; height: 4px; border-radius: 4px;
+      background: var(--cyan); margin: 8px auto 0;
     }
 
-    header p {
-      margin: 3px 0 0;
-      color: #ccc;
-      font-size: 14px;
+    .specs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media (min-width: 640px) { .specs { grid-template-columns: repeat(4, 1fr); } }
+    .spec {
+      background: #fff; border-radius: 14px; padding: 16px 8px; text-align: center;
+      border: 1px solid var(--line);
+    }
+    .spec b { display: block; font-size: 26px; color: var(--navy); font-weight: 800; line-height: 1.2; }
+    .spec small { color: var(--muted); font-size: 13px; }
+
+    .box-grid { display: grid; gap: 18px; align-items: center; }
+    @media (min-width: 720px) { .box-grid { grid-template-columns: 1fr 1fr; } }
+    .box-grid img { border-radius: 16px; width: 100%; max-width: 420px; margin-inline: auto; }
+    .box-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+    .box-list li {
+      background: #fff; border: 1px solid var(--line); border-radius: 12px;
+      padding: 12px 16px; font-weight: 600;
+      border-inline-start: 4px solid var(--cyan);
     }
 
-    main {
-      max-width: 520px;
-      margin: 24px auto;
-      padding: 0 15px;
+    .trust { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .trust div {
+      background: var(--navy); color: #fff; border-radius: 14px;
+      padding: 16px 8px; text-align: center; font-weight: 600; font-size: 14px; line-height: 1.5;
+      border-top: 3px solid var(--cyan);
+      display: flex; align-items: center; justify-content: center;
     }
 
+    /* ---------- form ---------- */
+    #order { scroll-margin-top: 70px; }
     .card {
-      background: white;
-      padding: 22px;
-      border-radius: 16px;
-      box-shadow: 0 5px 24px #0000000a;
+      background: #fff; border-radius: 18px; padding: 22px 18px;
+      box-shadow: 0 8px 30px #14142b14; max-width: 560px; margin: 0 auto;
+      border: 1px solid var(--line);
     }
-
-    .product {
-      background: #eeeeee;
-      border-radius: 12px;
-      padding: 25px 15px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .product h2 { margin: 0 0 5px; }
-
-    .product p {
-      margin: 0;
-      color: #666;
-      font-size: 14px;
-    }
-
-    label {
-      display: block;
-      font-weight: bold;
-      margin: 14px 0 5px;
-    }
-
+    .card h2 { margin: 0 0 2px; font-size: 22px; }
+    .card > p { margin: 0 0 8px; color: var(--muted); font-size: 14px; }
+    label { display: block; font-weight: 600; margin: 14px 0 5px; font-size: 15px; }
     input, select, textarea {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 9px;
-      font: inherit;
-      background: white;
+      display: block; width: 100%; padding: 12px; font: inherit;
+      border: 1.5px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink);
     }
+    select:disabled { background: #f6f7fa; color: var(--muted); cursor: not-allowed; }
+    input:focus, select:focus, textarea:focus { outline: 3px solid #22d3ee66; border-color: var(--cyan); }
+    .invalid { border-color: var(--red) !important; }
+    .err { color: var(--red); font-size: 13px; margin: 3px 0 0; font-weight: 600; }
+    .hint { color: var(--muted); font-size: 12px; margin: 3px 0 0; }
+    .label { display: block; font-weight: 600; margin: 14px 0 5px; font-size: 15px; }
+    .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .choice {
+      margin: 0; display: flex; gap: 8px; align-items: flex-start; cursor: pointer;
+      border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; font-weight: 700;
+    }
+    .choice input { width: auto; margin: 6px 0 0; accent-color: var(--navy); }
+    .choice small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .choice:has(input:checked) { border-color: var(--cyan); background: #22d3ee14; }
+    .choices.invalid .choice { border-color: var(--red); }
+    #desk-note { margin-top: 10px; }
+    .hp { position: absolute; top: 0; inset-inline-start: 0; width: 0; height: 0; overflow: hidden; opacity: 0; pointer-events: none; }
+    .summary {
+      margin-top: 18px; background: var(--bg); border-radius: 12px; padding: 12px 16px;
+      display: grid; gap: 4px; font-size: 15px;
+    }
+    .summary div { display: flex; justify-content: space-between; gap: 10px; }
+    .summary .total { font-weight: 800; font-size: 18px; border-top: 1px dashed var(--line); padding-top: 6px; margin-top: 4px; }
+    .summary .save { color: var(--green); font-weight: 600; }
+    #submit { margin-top: 18px; }
+    #submit:disabled { opacity: .6; cursor: wait; }
+    #status { margin: 12px 0 0; text-align: center; font-weight: 600; }
+    .success { text-align: center; padding: 14px 4px; }
+    .success .ok {
+      width: 64px; height: 64px; margin: 0 auto 6px; border-radius: 50%;
+      background: var(--green); color: #fff; font-size: 36px; line-height: 64px; font-weight: 800;
+    }
+    .success h2 { color: var(--green); }
 
-    input:focus, select:focus, textarea:focus {
-      outline: 2px solid #555;
-      outline-offset: 1px;
+    /* ---------- faq ---------- */
+    details.faq {
+      background: #fff; border: 1px solid var(--line); border-radius: 12px;
+      padding: 12px 16px; margin-bottom: 10px;
     }
+    details.faq summary { font-weight: 700; cursor: pointer; }
+    details.faq p { margin: 8px 0 0; color: var(--muted); }
 
-    button {
-      width: 100%;
-      border: 0;
-      border-radius: 10px;
-      padding: 14px;
-      margin-top: 22px;
-      background: #111;
-      color: white;
-      font: inherit;
-      font-weight: bold;
-      cursor: pointer;
+    /* ---------- footer ---------- */
+    footer { text-align: center; color: var(--muted); padding: 34px 16px 20px; font-size: 13px; }
+    .follow { font-weight: 700; color: var(--ink); font-size: 15px; margin: 0 0 10px; }
+    .social { display: flex; justify-content: center; gap: 14px; margin-bottom: 18px; }
+    .social a {
+      width: 48px; height: 48px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--navy); color: #fff; transition: transform .15s, background .15s;
     }
+    .social a:hover { transform: translateY(-2px); background: var(--navy-2); }
+    .social svg { width: 22px; height: 22px; fill: currentColor; }
+    /* wholesale: deliberately discreet */
+    details.wholesale { margin: 14px auto 0; max-width: 420px; font-size: 12px; color: #9a9fb0; }
+    details.wholesale summary { cursor: pointer; list-style: none; text-decoration: underline dotted; }
+    details.wholesale summary::-webkit-details-marker { display: none; }
+    details.wholesale p { margin: 6px 0 0; line-height: 1.6; }
+    details.wholesale a { color: #6b7180; }
 
-    button:disabled {
-      opacity: .6;
-      cursor: wait;
+    /* ---------- sticky bar (mobile) ---------- */
+    .sticky-cta {
+      position: fixed; bottom: 0; inset-inline: 0; z-index: 30;
+      background: #fff; border-top: 1px solid var(--line);
+      padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+      display: flex; align-items: center; gap: 12px;
+      transform: translateY(0); transition: transform .2s;
     }
-
-    #status {
-      margin-top: 14px;
-      text-align: center;
-    }
-
-    footer {
-      text-align: center;
-      color: #777;
-      padding: 20px;
-      font-size: 13px;
-    }
+    .sticky-cta.hide { transform: translateY(110%); }
+    .sticky-cta .p { font-weight: 800; color: var(--navy); line-height: 1.2; white-space: nowrap; }
+    .sticky-cta .p small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+    .sticky-cta .cta { padding: 10px; font-size: 17px; box-shadow: none; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>NEXORA</h1>
-    <p>منتجات مميزة لحياتك اليومية</p>
-  </header>
 
-  <main>
-    <section class="card">
-      <div class="product">
-        <h2>مصباح Nexora</h2>
-        <p>اكتشف المنتج وتواصل معنا لتأكيد طلبك.</p>
-        <p>السعر: يُحدّد لاحقًا</p>
+<header>
+  <div class="wrap">
+    <div class="brand"><img src="images/logo.webp" alt="Nexora" width="38" height="38">NEXORA</div>
+    <a class="mini" href="#order" data-track="header">اطلب الآن</a>
+  </div>
+</header>
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="wrap">
+    <div class="gallery">
+      <div class="main"><img id="main-img" src="images/torch-4.webp" alt="مصباح COBA LED مع علبته" width="928" height="1152" fetchpriority="high"></div>
+      <div class="thumbs" id="thumbs"></div>
+    </div>
+
+    <div>
+      <h1>مصباح COBA LED القوي<br>للمغامرة والبيت والسيارة</h1>
+      <p class="lead">جسم من الألمنيوم المتين، إضاءة قوية بعيدة المدى، وبطارية 10800mAh قابلة للشحن بكابل USB.</p>
+
+      <div class="price">
+        <strong id="price-now"></strong><span>دج</span>
       </div>
+      <div class="offer">من قطعتين فأكثر: <b id="price-two"></b> دج فقط للقطعة، توفّر <b id="price-save"></b> دج في كل قطعة</div>
+      <p class="delivery-note">الدفع عند الاستلام<span id="delivery-note"></span></p>
 
+      <ul class="bullets">
+        <li>مدى إضاءة حقيقي يصل إلى 1000 متر</li>
+        <li>بطارية 10800mAh تدوم لساعات طويلة</li>
+        <li>جسم من الألمنيوم مقاوم للصدمات</li>
+        <li>مثالي للرحلات والتخييم والسيارة والبيت</li>
+      </ul>
+      <a class="cta" href="#order" data-track="hero">اطلب الآن، الدفع عند الاستلام</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <!-- ===================== SPECS ===================== -->
+  <section class="block">
+    <h2 class="title">المواصفات</h2>
+    <div class="specs">
+      <div class="spec"><b>200W</b><small>القدرة</small></div>
+      <div class="spec"><b>10800<small style="display:inline"> mAh</small></b><small>البطارية</small></div>
+      <div class="spec"><b>1000 م</b><small>المدى الحقيقي</small></div>
+      <div class="spec"><b>ألمنيوم</b><small>الهيكل</small></div>
+    </div>
+  </section>
+
+  <!-- ===================== IN THE BOX ===================== -->
+  <section class="block">
+    <h2 class="title">ماذا تجد في العلبة؟</h2>
+    <div class="box-grid">
+      <img src="images/torch-1.webp" alt="محتويات العلبة: المصباح والبطارية وكابل الشحن" width="928" height="1152" loading="lazy">
+      <ul class="box-list">
+        <li>مصباح COBA LED من الألمنيوم (CB-2072-1)</li>
+        <li>بطارية ليثيوم 10800mAh</li>
+        <li>كابل شحن USB</li>
+        <li>علبة أصلية</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== TRUST ===================== -->
+  <section class="block">
+    <div class="trust">
+      <div>الدفع عند الاستلام</div>
+      <div>توصيل إلى بابك</div>
+      <div>تأكيد الطلب بالهاتف</div>
+    </div>
+  </section>
+
+  <!-- ===================== ORDER FORM ===================== -->
+  <section class="block" id="order">
+    <div class="card" id="order-card">
       <h2>اطلب الآن</h2>
-      <p>عمّر المعلومات التالية، وفريقنا يتواصل معاك لتأكيد الطلب.</p>
+      <p>املأ المعلومات وسنتصل بك لتأكيد الطلب. الدفع عند الاستلام.</p>
 
-      <form id="order-form">
+      <form id="order-form" novalidate>
         <label for="name">الاسم واللقب</label>
-        <input id="name" name="name" autocomplete="name"
-          required maxlength="100">
+        <input id="name" name="name" autocomplete="name" required maxlength="100">
+        <p class="err" data-for="name"></p>
 
         <label for="phone">رقم الهاتف</label>
-        <input id="phone" name="phone" type="tel"
-          autocomplete="tel" required maxlength="20"
-          placeholder="05 أو 06 أو 07">
+        <input id="phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel"
+               required maxlength="20" placeholder="0XXXXXXXXX" dir="ltr" style="text-align:right">
+        <p class="hint" id="phone-hint">10 أرقام، يبدأ بـ 05 أو 06 أو 07</p>
+        <p class="err" data-for="phone"></p>
 
         <label for="wilaya">الولاية</label>
-        <input id="wilaya" name="wilaya" required maxlength="60">
+        <select id="wilaya" name="wilaya" required autocomplete="address-level1">
+          <option value="">اختر الولاية</option>
+        </select>
+        <p class="err" data-for="wilaya"></p>
 
         <label for="commune">البلدية</label>
-        <input id="commune" name="commune" required maxlength="100">
+        <select id="commune" name="commune" required disabled>
+          <option value="">اختر الولاية أولاً</option>
+        </select>
+        <p class="err" data-for="commune"></p>
 
-        <label for="address">العنوان بالتفصيل</label>
-        <textarea id="address" name="address" required
-          maxlength="300" rows="3"></textarea>
+        <span class="label" id="delivery-label">طريقة التوصيل</span>
+        <div class="choices" role="radiogroup" aria-labelledby="delivery-label">
+          <label class="choice"><input type="radio" name="delivery" value="home"><span>إلى المنزل<small>نوصل الطلب إلى باب بيتك</small></span></label>
+          <label class="choice"><input type="radio" name="delivery" value="desk"><span>إلى مكتب التوصيل<small>تستلمه من أقرب مكتب لبلديتك</small></span></label>
+        </div>
+        <p class="err" data-for="delivery"></p>
+
+        <div id="address-box" hidden>
+          <label for="address">العنوان بالتفصيل</label>
+          <textarea id="address" name="address" maxlength="300" rows="3"
+                    autocomplete="street-address" placeholder="الحي، الشارع، رقم المنزل، أقرب معلم"></textarea>
+          <p class="err" data-for="address"></p>
+        </div>
+        <p class="hint" id="desk-note" hidden>سنرسل طلبك إلى أقرب مكتب توصيل في بلديتك، ونؤكد معك المكتب عند الاتصال.</p>
 
         <label for="quantity">الكمية</label>
-        <select id="quantity" name="quantity">
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-        </select>
+        <select id="quantity" name="quantity"></select>
 
-        <button type="submit">تأكيد الطلب</button>
+        <!-- honeypot: real users never see or fill this -->
+        <div class="hp" aria-hidden="true">
+          <label for="website">Website</label>
+          <input id="website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="summary" id="summary">
+          <div><span>سعر المنتج</span><span id="sum-items"></span></div>
+          <div class="save" id="sum-save-row" hidden><span>التوفير</span><span id="sum-save"></span></div>
+          <div><span>التوصيل</span><span id="sum-delivery"></span></div>
+          <div class="total"><span>المجموع</span><span id="sum-total"></span></div>
+        </div>
+
+        <button type="submit" id="submit" class="cta">تأكيد الطلب</button>
         <p id="status" role="status" aria-live="polite"></p>
       </form>
-    </section>
-  </main>
+    </div>
+  </section>
 
-  <footer>© Nexora — جميع الحقوق محفوظة</footer>
+  <!-- ===================== FAQ ===================== -->
+  <section class="block">
+    <h2 class="title">أسئلة شائعة</h2>
+    <details class="faq">
+      <summary>كيف أدفع؟</summary>
+      <p>الدفع عند الاستلام: تدفع للموزع بعد أن تستلم طلبك وتتأكد منه.</p>
+    </details>
+    <details class="faq">
+      <summary>متى يتم التوصيل؟</summary>
+      <p>بعد تأكيد الطلب بالهاتف نرسل لك الطلب. مدة التوصيل تختلف حسب الولاية وسنخبرك بها عند الاتصال.</p>
+    </details>
+    <details class="faq">
+      <summary>هل مدى 1000 متر حقيقي؟</summary>
+      <p>نعم، 1000 متر هو المدى الحقيقي للإضاءة، وليس رقمًا مبالغًا فيه.</p>
+    </details>
+    <details class="faq">
+      <summary>هل البطارية مرفقة؟</summary>
+      <p>نعم، البطارية وكابل الشحن USB داخل العلبة.</p>
+    </details>
+  </section>
+</main>
 
- 
+<footer>
+  <p class="follow">تابعنا</p>
+  <div class="social">
+    <a href="https://web.facebook.com/nexoratooli/" target="_blank" rel="noopener" aria-label="صفحتنا على فيسبوك" title="Facebook">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg>
+    </a>
+    <a href="https://www.tiktok.com/@nexoragad" target="_blank" rel="noopener" aria-label="صفحتنا على تيك توك" title="TikTok">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+    </a>
+  </div>
+  <div>© Nexora — جميع الحقوق محفوظة</div>
+
+  <details class="wholesale">
+    <summary>طلبات الجملة</summary>
+    <p>نبيع أيضًا بكميات الجملة. للتفاوض على السعر والكمية تواصل معنا مباشرة عبر واتساب:
+      <a href="https://wa.me/213776512100" target="_blank" rel="noopener"><span dir="ltr">+213 776 51 21 00</span></a></p>
+  </details>
+</footer>
+
+<!-- sticky mobile bar -->
+<div class="sticky-cta" id="sticky">
+  <div class="p"><span id="sticky-price"></span> دج<small>الدفع عند الاستلام</small></div>
+  <a class="cta" href="#order" data-track="sticky">اطلب الآن</a>
+</div>
+
+<script src="communes.js"></script>
 <script>
-  // Replace these two placeholders with your own Supabase values.
-  const SUPABASE_URL = "https://dokyfulqacjbdsubmvop.supabase.co";
-  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_7Nc4I-KNZ0FetDJuc2jp9A_GsRLjSoV";
+/* ===================================================================
+   CONFIG — edit these values, nothing else needs touching.
+   =================================================================== */
+const CONFIG = {
+  SUPABASE_URL: "https://dokyfulqacjbdsubmvop.supabase.co",
+  SUPABASE_PUBLISHABLE_KEY: "sb_publishable_7Nc4I-KNZ0FetDJuc2jp9A_GsRLjSoV",
 
-  const form = document.getElementById("order-form");
-  const status = document.getElementById("status");
-  const submitButton = form.querySelector('button[type="submit"]');
+  // total price in DA for each quantity offered in the form (1 to 5).
+  // 1 light = 3700; from 2 lights on, every light costs 3250
+  PRICES: { 1: 3700, 2: 6500, 3: 9750, 4: 13000, 5: 16250 },
+  DELIVERY_FEE: null,   // delivery cost in DA. 0 = free delivery. null = "set at confirmation"
 
-  form.addEventListener("submit", async function (event) {
-    event.preventDefault();
+  META_PIXEL_ID: "",    // e.g. "123456789012345". Empty = disabled
+  TIKTOK_PIXEL_ID: "",  // e.g. "C1234567890ABCDEF". Empty = disabled
 
-    if (submitButton.disabled) return;
+  MIN_FILL_SECONDS: 4,       // forms submitted faster than this are treated as bots
+  COOLDOWN_SECONDS: 60       // min delay between two orders from the same browser
+};
 
-    const originalButtonText = submitButton.textContent;
-    submitButton.disabled = true;
-    submitButton.textContent = "جاري إرسال الطلب...";
-    status.textContent = "";
-    status.style.color = "#171717";
+const WILAYAS = [
+  "أدرار","الشلف","الأغواط","أم البواقي","باتنة","بجاية","بسكرة","بشار","البليدة","البويرة",
+  "تمنراست","تبسة","تلمسان","تيارت","تيزي وزو","الجزائر","الجلفة","جيجل","سطيف","سعيدة",
+  "سكيكدة","سيدي بلعباس","عنابة","قالمة","قسنطينة","المدية","مستغانم","المسيلة","معسكر","ورقلة",
+  "وهران","البيض","إليزي","برج بوعريريج","بومرداس","الطارف","تندوف","تيسمسيلت","الوادي","خنشلة",
+  "سوق أهراس","تيبازة","ميلة","عين الدفلى","النعامة","عين تموشنت","غرداية","غليزان","تيميمون","برج باجي مختار",
+  "أولاد جلال","بني عباس","عين صالح","عين قزام","تقرت","جانت","المغير","المنيعة"
+];
+const IMAGES = ["torch-4","torch-5","torch-2","torch-1","torch-3"];
+const ALTS = ["المصباح مع علبته","المصباح من الأمام","المصباح والبطارية","محتويات العلبة","العلبة الأصلية"];
 
-    const payload = {
-      customer_name: form.elements["name"].value.trim(),
-      phone: form.elements["phone"].value.trim(),
-      wilaya: form.elements["wilaya"].value.trim(),
-      commune: form.elements["commune"].value.trim(),
-      address: form.elements["address"].value.trim(),
-      quantity: Number(form.elements["quantity"].value)
-    };
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+// non-breaking space keeps "3 700" in the right order inside the RTL page
+const fmt = n => n.toLocaleString("fr-DZ").replace(/[   ]/g, " ");
+const QTYS = Object.keys(CONFIG.PRICES).map(Number).sort((a, b) => a - b);
+const UNIT = CONFIG.PRICES[1];
+const priceFor = q => CONFIG.PRICES[q];
+const pageLoadedAt = Date.now();
 
-    try {
-      const response = await fetch(
-        `${SUPABASE_URL.replace(/\/$/, "")}/functions/v1/create-order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": SUPABASE_PUBLISHABLE_KEY
-          },
-          body: JSON.stringify(payload)
-        }
-      );
+/* ---------- tracking pixels (only if IDs are set) ---------- */
+if (CONFIG.META_PIXEL_ID) {
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq("init", CONFIG.META_PIXEL_ID);
+  fbq("track", "PageView");
+}
+if (CONFIG.TIKTOK_PIXEL_ID) {
+  !function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+    ttq.load(CONFIG.TIKTOK_PIXEL_ID);
+    ttq.page();
+  }(window,document,"ttq");
+}
+function track(metaEvent, tiktokEvent, data) {
+  try { if (window.fbq) fbq("track", metaEvent, data || {}); } catch (_) {}
+  try { if (window.ttq) ttq.track(tiktokEvent, data || {}); } catch (_) {}
+}
+track("ViewContent", "ViewContent", { content_name: "COBA CB-2072-1", value: UNIT, currency: "DZD" });
+document.querySelectorAll("[data-track]").forEach(a =>
+  a.addEventListener("click", () => track("InitiateCheckout", "ClickButton")));
 
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.error || "تعذر تسجيل الطلب.");
-      }
-
-      status.style.color = "#16803c";
-      status.textContent =
-        `تم تسجيل طلبك بنجاح! رقم الطلب: ${result.order_id}. سيتواصل معك فريقنا لتأكيد الطلب.`;
-
-      form.reset();
-    } catch (error) {
-      console.error("Nexora order submission failed:", error);
-      status.style.color = "#b42318";
-      status.textContent =
-        "ما قدرناش نسجلو الطلب. تحقق من الإنترنت وحاول مرة أخرى.";
-    } finally {
-      submitButton.disabled = false;
-      submitButton.textContent = originalButtonText;
-    }
+/* ---------- gallery ---------- */
+const mainImg = $("#main-img");
+const thumbs = $("#thumbs");
+IMAGES.forEach((name, i) => {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.setAttribute("aria-label", ALTS[i]);
+  if (i === 0) b.setAttribute("aria-current", "true");
+  const img = document.createElement("img");
+  img.src = `images/${name}.webp`; img.alt = ""; img.loading = "lazy"; img.width = 928; img.height = 1152;
+  b.appendChild(img);
+  b.addEventListener("click", () => {
+    mainImg.src = `images/${name}.webp`; mainImg.alt = ALTS[i];
+    thumbs.querySelectorAll("button").forEach(x => x.removeAttribute("aria-current"));
+    b.setAttribute("aria-current", "true");
   });
-</script>
+  thumbs.appendChild(b);
+});
 
+/* ---------- prices ---------- */
+const form = $("#order-form");
+const qtySel = $("#quantity");
+QTYS.forEach(q => {
+  const o = document.createElement("option");
+  o.value = q;
+  o.textContent = q;
+  qtySel.appendChild(o);
+});
+$("#price-now").textContent = fmt(UNIT);
+$("#sticky-price").textContent = fmt(UNIT);
+if (CONFIG.PRICES[2]) {
+  const multiUnit = CONFIG.PRICES[2] / 2;
+  $("#price-two").textContent = fmt(multiUnit);
+  $("#price-save").textContent = fmt(UNIT - multiUnit);
+} else {
+  $(".offer").hidden = true;
+}
+if (CONFIG.DELIVERY_FEE !== null) {
+  $("#delivery-note").textContent = CONFIG.DELIVERY_FEE === 0 ? " · توصيل مجاني" : ` · التوصيل ${fmt(CONFIG.DELIVERY_FEE)} دج`;
+}
+function updateSummary() {
+  const q = Number(qtySel.value) || 1;
+  const items = priceFor(q);
+  const save = UNIT * q - items;
+  $("#sum-items").textContent = `${fmt(items)} دج`;
+  $("#sum-save-row").hidden = save <= 0;
+  $("#sum-save").textContent = `${fmt(save)} دج`;
+  if (CONFIG.DELIVERY_FEE === null) {
+    $("#sum-delivery").textContent = "يُحدَّد عند التأكيد";
+    $("#sum-total").textContent = `${fmt(items)} دج + التوصيل`;
+  } else {
+    $("#sum-delivery").textContent = CONFIG.DELIVERY_FEE === 0 ? "مجاني" : `${fmt(CONFIG.DELIVERY_FEE)} دج`;
+    $("#sum-total").textContent = `${fmt(items + CONFIG.DELIVERY_FEE)} دج`;
+  }
+}
+updateSummary();
+qtySel.addEventListener("change", updateSummary);
+
+/* ---------- wilaya → commune (reactive) ---------- */
+const wilayaSel = $("#wilaya");
+const communeSel = $("#commune");
+const COMMUNES = window.COMMUNES || null;
+WILAYAS.forEach((w, i) => {
+  const o = document.createElement("option");
+  o.value = `${String(i + 1).padStart(2, "0")} - ${w}`;
+  o.textContent = o.value;
+  wilayaSel.appendChild(o);
+});
+wilayaSel.addEventListener("change", () => {
+  const code = wilayaSel.value.slice(0, 2);
+  const list = code && COMMUNES && COMMUNES[code];
+  communeSel.textContent = "";
+  setError("commune", "");
+  if (!code) {
+    communeSel.disabled = true;
+    communeSel.add(new Option("اختر الولاية أولاً", ""));
+  } else if (!list || !list.length) {
+    // the list only comes from communes.js; never let the customer type it
+    communeSel.disabled = true;
+    communeSel.add(new Option("تعذر تحميل البلديات، أعد تحميل الصفحة", ""));
+  } else {
+    communeSel.disabled = false;
+    communeSel.add(new Option("اختر البلدية", ""));
+    [...list].sort((a, b) => a.localeCompare(b, "ar")).forEach(c => communeSel.add(new Option(c, c)));
+  }
+});
+
+/* ---------- delivery type → address ---------- */
+const addressBox = $("#address-box");
+const deskNote = $("#desk-note");
+const deliveryValue = () => (form.querySelector('input[name="delivery"]:checked') || {}).value || "";
+form.querySelectorAll('input[name="delivery"]').forEach(r => r.addEventListener("change", () => {
+  const home = deliveryValue() === "home";
+  addressBox.hidden = !home;
+  deskNote.hidden = home;
+  setError("delivery", "");
+  if (home) form.elements["address"].focus();
+}));
+
+/* ---------- hide sticky bar while the form is on screen ---------- */
+const sticky = $("#sticky");
+if ("IntersectionObserver" in window) {
+  new IntersectionObserver(es => sticky.classList.toggle("hide", es[0].isIntersecting))
+    .observe($("#order-card"));
+}
+
+/* ---------- phone ---------- */
+const phoneInput = $("#phone");
+function cleanPhone(raw) {
+  let d = raw
+    .replace(/[٠-٩]/g, c => c.charCodeAt(0) - 0x0660)   // Arabic-Indic digits
+    .replace(/[۰-۹]/g, c => c.charCodeAt(0) - 0x06F0)   // Persian digits
+    .replace(/\D/g, "");
+  // pasted international format: +213 / 00213 5XXXXXXXX
+  if (/^00213[567]\d{8}$/.test(d)) d = "0" + d.slice(5);
+  else if (/^213[567]\d{8}$/.test(d)) d = "0" + d.slice(3);
+  return d.slice(0, 10);   // never more than 10 digits
+}
+function phoneError(raw, live = false) {
+  const d = cleanPhone(raw);
+  if (!d) return "أدخل رقم الهاتف";
+  const badStart = d.length >= 2 ? !/^0[567]/.test(d) : d !== "0";
+  const short = !live && d.length < 10;   // while typing, only the prefix is judged
+  const start = d.slice(0, 2);
+  if (badStart && short) return `الرقم خاطئ: يبدأ بـ ${start} والصحيح أن يبدأ بـ 05 أو 06 أو 07، وهو قصير (${d.length} أرقام فقط من 10).`;
+  if (badStart) return `الرقم خاطئ: يبدأ بـ ${start}، ورقم الهاتف يجب أن يبدأ بـ 05 أو 06 أو 07.`;
+  if (short) return `الرقم قصير وخاطئ: أدخلت ${d.length} أرقام فقط، ورقم الهاتف يتكون من 10 أرقام.`;
+  return "";
+}
+phoneInput.addEventListener("input", () => {
+  const cleaned = cleanPhone(phoneInput.value);
+  if (phoneInput.value !== cleaned) phoneInput.value = cleaned;   // digits only, max 10
+  // wrong prefix is shown immediately; "too short" waits until the field is left
+  const d = cleaned;
+  if (d.length >= 2 && !/^0[567]/.test(d)) setError("phone", phoneError(d, true));
+  else setError("phone", "");   // "too short" waits for blur / submit
+});
+
+/* ---------- validation ---------- */
+const rules = {
+  name:    () => { const v = form.elements["name"].value.trim(); return v.length >= 3 && /\p{L}/u.test(v) ? "" : "أدخل الاسم الكامل"; },
+  phone:   () => phoneError(phoneInput.value),
+  wilaya:  () => wilayaSel.value ? "" : "اختر الولاية",
+  commune: () => !wilayaSel.value ? "اختر الولاية أولاً" : (communeSel.value ? "" : "اختر البلدية"),
+  delivery: () => deliveryValue() ? "" : "اختر طريقة التوصيل: إلى المنزل أو إلى مكتب التوصيل",
+  address: () => deliveryValue() !== "home" || form.elements["address"].value.trim().length >= 8
+                 ? "" : "أدخل العنوان بالتفصيل (الحي، الشارع...)"
+};
+const fieldEl = f => f === "delivery" ? $(".choices") : form.elements[f];
+function setError(field, msg) {
+  fieldEl(field).classList.toggle("invalid", !!msg);
+  $(`.err[data-for="${field}"]`).textContent = msg;
+  if (field === "phone") $("#phone-hint").hidden = !!msg;
+}
+function validate() {
+  let first = null;
+  for (const f of Object.keys(rules)) {
+    const msg = rules[f]();
+    setError(f, msg);
+    if (msg && !first) first = f === "delivery" ? form.querySelector('input[name="delivery"]') : fieldEl(f);
+  }
+  if (first) first.focus();
+  return !first;
+}
+["name", "phone", "address"].forEach(f =>
+  form.elements[f].addEventListener("blur", () => { if (form.elements[f].value) setError(f, rules[f]()); }));
+["name", "address"].forEach(f =>
+  form.elements[f].addEventListener("input", () => form.elements[f].classList.remove("invalid")));
+wilayaSel.addEventListener("change", () => setError("wilaya", rules.wilaya()));
+communeSel.addEventListener("change", () => setError("commune", rules.commune()));
+
+/* ---------- submit ---------- */
+const statusEl = $("#status");
+const submitBtn = $("#submit");
+const LAST_KEY = "nexora_last_order";
+
+function showSuccess(orderId) {
+  const card = $("#order-card");
+  card.textContent = "";
+  const box = document.createElement("div");
+  box.className = "success";
+  const ok = document.createElement("div"); ok.className = "ok"; ok.textContent = "✓";
+  const h = document.createElement("h2"); h.textContent = "تم تسجيل طلبك بنجاح!";
+  const p1 = document.createElement("p"); p1.textContent = `رقم الطلب: ${orderId}`;
+  const p2 = document.createElement("p"); p2.textContent = "سيتصل بك فريقنا قريبًا لتأكيد الطلب. المرجو إبقاء هاتفك قريبًا منك.";
+  box.append(ok, h, p1, p2);
+  card.appendChild(box);
+  card.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+form.addEventListener("submit", async function (event) {
+  event.preventDefault();
+  if (submitBtn.disabled) return;
+
+  // bot checks: honeypot filled, or form completed impossibly fast
+  const botLike = form.elements["website"].value !== "" ||
+                  (Date.now() - pageLoadedAt) / 1000 < CONFIG.MIN_FILL_SECONDS;
+
+  if (!validate()) return;
+
+  // cooldown against accidental double orders / spam from one browser
+  try {
+    const last = Number(localStorage.getItem(LAST_KEY) || 0);
+    const wait = CONFIG.COOLDOWN_SECONDS - Math.floor((Date.now() - last) / 1000);
+    if (wait > 0) {
+      statusEl.style.color = "#b42318";
+      statusEl.textContent = `لقد أرسلت طلبًا للتو. انتظر ${wait} ثانية قبل إرسال طلب آخر.`;
+      return;
+    }
+  } catch (_) {}
+
+  if (botLike) {
+    // pretend success, send nothing
+    showSuccess("—");
+    return;
+  }
+
+  const original = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = "جاري إرسال الطلب...";
+  statusEl.textContent = "";
+
+  const payload = {
+    customer_name: form.elements["name"].value.trim(),
+    phone: cleanPhone(phoneInput.value),
+    wilaya: wilayaSel.value,
+    commune: communeSel.value,
+    // the orders table has no delivery-type column yet, so it travels inside the address
+    address: deliveryValue() === "home"
+      ? `[توصيل إلى المنزل] ${form.elements["address"].value.trim()}`
+      : "[توصيل إلى مكتب التوصيل - Stop desk]",
+    quantity: Number(qtySel.value)
+  };
+
+  try {
+    const response = await fetch(
+      `${CONFIG.SUPABASE_URL.replace(/\/$/, "")}/functions/v1/create-order`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "apikey": CONFIG.SUPABASE_PUBLISHABLE_KEY },
+        body: JSON.stringify(payload)
+      }
+    );
+    const result = await response.json();
+    if (!response.ok || !result.success) throw new Error(result.error || "order failed");
+
+    try { localStorage.setItem(LAST_KEY, String(Date.now())); } catch (_) {}
+    track("Purchase", "PlaceAnOrder", { value: priceFor(payload.quantity), currency: "DZD", quantity: payload.quantity });
+    showSuccess(result.order_id);
+  } catch (error) {
+    console.error("Nexora order submission failed:", error);
+    statusEl.style.color = "#b42318";
+    statusEl.textContent = "ما قدرناش نسجلو الطلب. تحقق من الإنترنت وحاول مرة أخرى.";
+    submitBtn.disabled = false;
+    submitBtn.textContent = original;
+  }
+});
+</script>
 </body>
 </html>
