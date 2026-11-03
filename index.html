@@ -9,7 +9,7 @@
   <link rel="icon" type="image/webp" href="images/logo.webp">
   <meta property="og:title" content="Nexora | زوج تورشات في علبة وحدة بـ 6500 دج">
   <meta property="og:description" content="زوج تورشات + زوج بطاريات + زوج كابلات شحن. 6500 دج للعلبة كاملة، والتوصيل يُحدّد عند التأكيد.">
-  <meta property="og:image" content="https://jweebae.github.io/nexora-order-page/images/dual-box-offer.webp">
+  <meta property="og:image" content="https://jweebae.github.io/nexora-order-page/images/dual-cover-v2.webp">
   <meta property="og:url" content="https://jweebae.github.io/nexora-order-page/">
   <meta property="og:type" content="product">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -76,7 +76,7 @@
       aspect-ratio: 4 / 5; box-shadow: 0 12px 40px #0008;
     }
     .gallery .main img { width: 100%; height: 100%; object-fit: contain; }
-    .thumbs { display: grid; grid-template-columns: repeat(auto-fit, minmax(56px, 1fr)); gap: 8px; margin-top: 10px; }
+    .thumbs { display: grid; grid-template-columns: repeat(4, minmax(0, 82px)); justify-content: center; gap: 8px; margin-top: 10px; }
     .thumbs button {
       padding: 0; margin: 0; border: 2px solid transparent; border-radius: 10px;
       overflow: hidden; background: #000; cursor: pointer; aspect-ratio: 4/5;
@@ -131,7 +131,11 @@
     .spec b { display: block; font-size: 26px; color: var(--navy); font-weight: 800; line-height: 1.2; }
     .spec small { color: var(--muted); font-size: 13px; }
 
-    .box-grid { display: grid; gap: 18px; align-items: center; }
+    .box-grid { display: grid; gap: 18px; align-items: stretch; }
+    .kit-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+    .kit-card h3 { text-align: center; margin: 0 0 14px; color: var(--navy); font-size: 21px; }
+    .kit-card img { margin-bottom: 16px; aspect-ratio: 4 / 5; object-fit: contain; background: #000; }
+    .kit-price { text-align: center; color: var(--navy); font-size: 22px; font-weight: 800; margin: 16px 0 0; }
     @media (min-width: 720px) { .box-grid { grid-template-columns: 1fr 1fr; } }
     .box-grid img { border-radius: 16px; width: 100%; max-width: 420px; margin-inline: auto; }
     .box-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
@@ -250,7 +254,7 @@
 <div class="hero">
   <div class="wrap">
     <div class="gallery">
-      <div class="main"><img id="main-img" src="images/dual-box-offer.webp" alt="علبة COBA فيها زوج تورشات وزوج بطاريات وزوج كابلات شحن بـ 6500 دج" width="1122" height="1402" fetchpriority="high"></div>
+      <div class="main"><img id="main-img" src="images/dual-cover-v2.webp" alt="علبة COBA فيها زوج تورشات وزوج بطاريات وزوج كابلات شحن بـ 6500 دج" width="1229" height="1536" fetchpriority="high"></div>
       <div class="thumbs" id="thumbs"></div>
     </div>
 
@@ -290,16 +294,30 @@
 
   <!-- ===================== IN THE BOX ===================== -->
   <section class="block">
-    <h2 class="title">ماذا تجد في العلبة؟</h2>
+    <h2 class="title">ماذا تجد في كل علبة؟</h2>
     <div class="box-grid">
-      <img src="images/dual-box-contents.webp" alt="علبة COBA المفتوحة: زوج تورشات وزوج بطاريات وزوج كابلات شحن" width="1122" height="1402" loading="lazy">
-      <ul class="box-list">
-        <li>زوج تورشات COBA — علبة CB-2072</li>
-        <li>زوج بطاريات، بطارية لكل تورش</li>
-        <li>زوج كابلات شحن، كابل لكل تورش</li>
-        <li>الزوج مع لوازمهم داخل علبة واحدة بـ 6500 دج</li>
-      </ul>
+      <article class="kit-card">
+        <h3>علبة التورش الواحدة</h3>
+        <img src="images/torch-1.webp" alt="علبة فيها تورش واحدة وبطارية واحدة وكابل شحن واحد" width="928" height="1152" loading="lazy">
+        <ul class="box-list">
+          <li>تورش COBA واحدة</li>
+          <li>بطارية واحدة قابلة للشحن</li>
+          <li>كابل شحن واحد</li>
+        </ul>
+        <p class="kit-price"><bdi>3700</bdi> دج للعلبة</p>
+      </article>
+      <article class="kit-card">
+        <h3>علبة زوج تورشات</h3>
+        <img src="images/dual-contents-v2.webp" alt="علبة فيها زوج تورشات وزوج بطاريات وزوج كابلات شحن" width="1229" height="1536" loading="lazy">
+        <ul class="box-list">
+          <li>زوج تورشات COBA في علبة واحدة</li>
+          <li>زوج بطاريات قابلة للشحن</li>
+          <li>زوج كابلات شحن</li>
+        </ul>
+        <p class="kit-price"><bdi>6500</bdi> دج للعلبة كاملة</p>
+      </article>
     </div>
+    <p class="hint" style="text-align:center;margin-top:12px">سعر التوصيل منفصل ويُحدّد عند تأكيد الطلب.</p>
   </section>
 
   <!-- ===================== TRUST ===================== -->
@@ -468,8 +486,8 @@ const WILAYAS = [
   "سوق أهراس","تيبازة","ميلة","عين الدفلى","النعامة","عين تموشنت","غرداية","غليزان","تيميمون","برج باجي مختار",
   "أولاد جلال","بني عباس","عين صالح","عين قزام","تقرت","جانت","المغير","المنيعة"
 ];
-const IMAGES = ["dual-box-offer","dual-box-contents","torch-4","torch-1"];
-const ALTS = ["علبة زوج تورشات بـ 6500 دج","محتوى علبة الزوج مع لوازم الشحن","عرض التورش الواحدة","محتوى علبة التورش الواحدة"];
+const IMAGES = ["dual-cover-v2","dual-contents-v2","torch-4","torch-1"];
+const ALTS = ["علبة زوج تورشات مع الغلاف الأصلي","محتوى علبة الزوج: تورشات وبطاريات وكابلات شحن","التورش الواحدة مع علبتها","محتوى علبة التورش الواحدة"];
 
 /* ---------- helpers ---------- */
 const $ = (s, r = document) => r.querySelector(s);
@@ -584,7 +602,7 @@ qtySel.addEventListener("change", updateSummary);
 offerSel.addEventListener("change", () => {
   populateQuantities();
   updateSummary();
-  mainImg.src = isDuo() ? "images/dual-box-offer.webp" : "images/torch-4.webp";
+  mainImg.src = isDuo() ? "images/dual-cover-v2.webp" : "images/torch-4.webp";
   const imageIndex = isDuo() ? 0 : 2;
   mainImg.alt = ALTS[imageIndex];
   thumbs.querySelectorAll("button").forEach((button, i) => {
@@ -826,3 +844,4 @@ form.addEventListener("submit", async function (event) {
 </script>
 </body>
 </html>
+
