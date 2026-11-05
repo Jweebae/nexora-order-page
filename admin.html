@@ -106,6 +106,27 @@
     .saved { font-size: 13px; color: var(--green); font-weight: 600; min-height: 20px; margin-top: 8px; }
     .saved.err { color: var(--red); }
     .toast { position: fixed; bottom: 16px; inset-inline: 16px; margin: auto; max-width: 360px; background: var(--ink); color: #fff; padding: 10px 14px; border-radius: 10px; text-align: center; font-weight: 600; z-index: 50; }
+    /* navigation, history, activity, editing */
+    .nav { display: flex; gap: 4px; }
+    .nav a { color: inherit; text-decoration: none; padding: 6px 10px; border-radius: 8px; font-weight: 700; }
+    .nav a[aria-current] { background: rgba(255,255,255,.18); }
+    .topw { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; font-size: 13px; }
+    .topw span { background: #fff; border: 1px solid #dde3ea; border-radius: 999px; padding: 3px 10px; }
+    .hist { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
+    .hist li { border-inline-start: 3px solid #dde3ea; padding: 2px 10px; font-size: 14px; }
+    .hist li.created { border-color: #2e9d5b; }
+    .hist li.deleted { border-color: #d64545; }
+    .hist .meta { font-size: 12px; opacity: .7; }
+    .hist .chg { display: block; }
+    .repeat { margin: 0; font-size: 14px; }
+    .repeat.warn { color: #9a5b00; font-weight: 700; }
+    .row-btns { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+    .actions .del { color: #d64545; margin-inline-start: auto; }
+    .danger { border-color: #f3c3bf; }
+    .danger .btn { background: #d64545; color: #fff; }
+    .danger .btn[disabled] { opacity: .45; cursor: not-allowed; }
+    .act-link { cursor: pointer; text-decoration: underline; }
+    p.muted { color: var(--muted); }
   </style>
 </head>
 <body>
@@ -114,6 +135,10 @@
   <div class="wrap">
     <div class="brand"><img src="images/logo.webp" alt="" width="32" height="32"><span>NEXORA · <span data-t="admin"></span></span></div>
     <div class="hbtns">
+      <nav class="nav" id="nav" hidden>
+        <a href="#" id="nav-orders" data-t="navOrders"></a>
+        <a href="#activity" id="nav-activity" data-t="navActivity"></a>
+      </nav>
       <div class="langs" role="group" aria-label="Language">
         <button type="button" data-lang="ar">AR</button>
         <button type="button" data-lang="fr">FR</button>
@@ -131,7 +156,7 @@
   <p data-t="loginSub"></p>
   <form id="login-form">
     <label for="email" data-t="email"></label>
-    <input id="email" type="email" autocomplete="username" required dir="ltr">
+    <input id="email" type="text" autocomplete="username" required dir="ltr">
     <label for="password" data-t="password"></label>
     <input id="password" type="password" autocomplete="current-password" required dir="ltr">
     <button class="btn" type="submit" id="login-btn" data-t="enter"></button>
@@ -149,8 +174,10 @@
       <option value="0" data-t="all"></option>
     </select>
     <input id="search" type="search" data-tp="search">
+    <button class="btn" id="export" type="button" data-t="export"></button>
   </div>
   <div class="stats" id="stats"></div>
+  <div class="topw" id="topw"></div>
   <div class="tabs" id="tabs" role="toolbar"></div>
   <div class="table-box">
     <table>
@@ -175,6 +202,11 @@
 <!-- ============ ONE ORDER ============ -->
 <main class="wrap" id="detail-view" hidden>
   <div class="detail" id="detail"></div>
+</main>
+
+<!-- ============ ACTIVITY ============ -->
+<main class="wrap" id="activity-view" hidden>
+  <div id="activity"></div>
 </main>
 
 <div class="toast" id="toast" hidden></div>
@@ -265,6 +297,47 @@ const LANG_KEY = "nexora_admin_lang";
 let lang = "ar";
 try { lang = localStorage.getItem(LANG_KEY) || "ar"; } catch (_) {}
 if (!T[lang]) lang = "ar";
+const USER_DOMAIN = "@nexora.dz";   // a username without "@" signs in as username@nexora.dz
+/* Texts for navigation, editing, deleting, history and the activity log. */
+Object.assign(T.ar, {
+  navOrders: "الطلبات", navActivity: "السجل", export: "تصدير CSV",
+  del: "🗑 حذف الطلب", delSure: "اضغط مرة أخرى للتأكيد", deleted: "تم حذف الطلب",
+  actTitle: "سجل النشاط", actSub: "كل عملية على الطلبات: من قام بها ومتى.", actEmpty: "لا يوجد نشاط بعد.",
+  noLogs: "السجل غير مفعّل بعد في قاعدة البيانات.", histTitle: "تاريخ الطلب",
+  editTitle: "تعديل بيانات الطلب", editSave: "حفظ التعديلات",
+  repeat: n => `⚠️ زبون متكرر: ${n} طلب(ات) سابقة بنفس الرقم`, firstOrder: "أول طلب لهذا الرقم",
+  a_created: "أنشأ الطلب", a_updated: "عدّل", a_deleted: "حذف الطلب", byWebsite: "الموقع", deletedOrder: "طلب محذوف",
+  resetTitle: "إعادة ترقيم الطلبات", resetHint: "يبدأ الترقيم من جديد من #1. متاح فقط بعد حذف كل الطلبات.",
+  resetBtn: "إعادة الترقيم من #1", resetSure: "اضغط مرة أخرى للتأكيد", resetDone: "سيكون الطلب القادم رقم #1",
+  resetBlocked: n => `احذف الطلبات أولا (${n} متبقية)`, topWilayas: "أكثر الولايات طلبا:",
+  badPhone: "رقم الهاتف غير صحيح", badQty: "الكمية أو المبلغ غير صحيح",
+});
+Object.assign(T.fr, {
+  navOrders: "Commandes", navActivity: "Historique", export: "Exporter CSV",
+  del: "🗑 Supprimer", delSure: "Cliquez encore pour confirmer", deleted: "Commande supprimée",
+  actTitle: "Historique d'activité", actSub: "Chaque action sur les commandes : qui et quand.", actEmpty: "Aucune activité pour le moment.",
+  noLogs: "L'historique n'est pas encore activé dans la base.", histTitle: "Historique de la commande",
+  editTitle: "Modifier la commande", editSave: "Enregistrer",
+  repeat: n => `⚠️ Client récurrent : ${n} commande(s) avec ce numéro`, firstOrder: "Première commande de ce numéro",
+  a_created: "a créé la commande", a_updated: "a modifié", a_deleted: "a supprimé la commande", byWebsite: "Site web", deletedOrder: "commande supprimée",
+  resetTitle: "Renuméroter les commandes", resetHint: "Repart de #1. Possible uniquement quand toutes les commandes sont supprimées.",
+  resetBtn: "Repartir de #1", resetSure: "Cliquez encore pour confirmer", resetDone: "La prochaine commande sera #1",
+  resetBlocked: n => `Supprimez d'abord les commandes (${n} restantes)`, topWilayas: "Wilayas les plus actives :",
+  badPhone: "Numéro invalide", badQty: "Quantité ou montant invalide",
+});
+Object.assign(T.en, {
+  navOrders: "Orders", navActivity: "Activity", export: "Export CSV",
+  del: "🗑 Delete order", delSure: "Click again to confirm", deleted: "Order deleted",
+  actTitle: "Activity log", actSub: "Every action on orders: who did it and when.", actEmpty: "No activity yet.",
+  noLogs: "History is not switched on in the database yet.", histTitle: "Order history",
+  editTitle: "Edit order details", editSave: "Save changes",
+  repeat: n => `⚠️ Repeat customer: ${n} earlier order(s) from this number`, firstOrder: "First order from this number",
+  a_created: "created the order", a_updated: "changed", a_deleted: "deleted the order", byWebsite: "Website", deletedOrder: "deleted order",
+  resetTitle: "Restart order numbers", resetHint: "Starts again at #1. Only possible once every order is deleted.",
+  resetBtn: "Restart at #1", resetSure: "Click again to confirm", resetDone: "The next order will be #1",
+  resetBlocked: n => `Delete the orders first (${n} left)`, topWilayas: "Busiest wilayas:",
+  badPhone: "Invalid phone number", badQty: "Invalid quantity or amount",
+});
 const t = () => T[lang];
 
 function applyLang() {
@@ -326,12 +399,16 @@ function showView(v) {
   $("#login-view").hidden = v !== "login";
   $("#list-view").hidden = v !== "list";
   $("#detail-view").hidden = v !== "detail";
-  $("#refresh").hidden = $("#logout").hidden = v === "login";
+  $("#activity-view").hidden = v !== "activity";
+  $("#refresh").hidden = $("#logout").hidden = $("#nav").hidden = v === "login";
+  $("#nav-orders").toggleAttribute("aria-current", v === "list" || v === "detail");
+  $("#nav-activity").toggleAttribute("aria-current", v === "activity");
 }
 function route() {
   if (!signedIn) return showView("login");
   const m = /^#o=(\d+)$/.exec(location.hash);
   if (m) { showView("detail"); renderDetail(Number(m[1])); window.scrollTo(0, 0); }
+  else if (location.hash === "#activity") { showView("activity"); renderActivity(); }
   else { showView("list"); renderList(); }
 }
 window.addEventListener("hashchange", route);
@@ -354,12 +431,13 @@ $("#login-form").addEventListener("submit", async e => {
   e.preventDefault();
   const btn = $("#login-btn");
   btn.disabled = true; $("#login-msg").textContent = "";
-  const { error } = await db.auth.signInWithPassword({ email: $("#email").value.trim(), password: $("#password").value });
+  const { error } = await db.auth.signInWithPassword({ email: loginEmail($("#email").value), password: $("#password").value });
   btn.disabled = false;
   if (error) { $("#login-msg").textContent = t().badLogin; return; }
   $("#password").value = "";
   start();
 });
+function loginEmail(v) { v = v.trim(); return v.includes("@") ? v : v.toLowerCase() + USER_DOMAIN; }
 $("#logout").addEventListener("click", async () => {
   await db.auth.signOut(); signedIn = false; orders = [];
   history.replaceState(null, "", location.pathname); route();
@@ -409,6 +487,7 @@ function matches(o) {
 function renderList() {
   const period = orders.filter(inPeriod);
   renderStats(period);
+  renderTopWilayas(period);
   renderTabs(period);
   const shown = period.filter(o => (currentTab === "all" || o.status === currentTab) && matches(o));
   const tbody = $("#rows");
@@ -528,7 +607,8 @@ function renderDetail(id) {
         el("a", { href: `https://wa.me/${intl}`, target: "_blank", rel: "noopener", text: t().whatsapp }),
         el("button", { type: "button", text: t().copyZR, onclick: async () => {
           try { await navigator.clipboard.writeText(zrText); toast(t().copied); } catch { toast(t().copyFail); }
-        } }))),
+        } }),
+        deleteButton(o))),
     el("div", { class: "panel" },
       el("div", { class: "edit" },
         el("div", {}, el("label", { for: "d-status", text: t().status }), statusSel),
@@ -536,6 +616,155 @@ function renderDetail(id) {
         el("div", { class: "full" }, el("label", { for: "d-notes", text: t().notes }), notes)),
       savedEl)
   );
+  renderDetailExtras(o, box);
+}
+
+/* =================================================================
+   EXPORT, INSIGHTS, DELETE, EDIT, HISTORY, ACTIVITY
+   ================================================================= */
+const visibleOrders = () => orders.filter(inPeriod).filter(o => (currentTab === "all" || o.status === currentTab) && matches(o));
+
+$("#export").addEventListener("click", () => {
+  const cols = ["id", "created_at", "status", "customer_name", "phone", "wilaya", "commune", "delivery_type", "address", "quantity", "total_price", "tracking_number", "notes"];
+  const cell = v => {
+    let x = v == null ? "" : String(v);
+    if (/^[=+\-@]/.test(x)) x = "'" + x;   // never let a cell run as a formula
+    return /[",;\n\r]/.test(x) ? `"${x.replace(/"/g, '""')}"` : x;
+  };
+  const lines = [cols.join(";"), ...visibleOrders().map(o => cols.map(c => cell(c === "created_at" ? when(o[c]) : c === "total_price" ? totalOf(o) : o[c])).join(";"))];
+  const blob = new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+  const a = el("a", { href: URL.createObjectURL(blob), download: `nexora-commandes-${new Date().toISOString().slice(0, 10)}.csv` });
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+});
+
+function renderTopWilayas(p) {
+  const box = $("#topw");
+  box.textContent = "";
+  const counts = {};
+  p.forEach(o => { const w = o.wilaya.replace(/^\d+ - /, ""); counts[w] = (counts[w] || 0) + 1; });
+  const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  if (top.length) box.append(el("b", { text: t().topWilayas }), ...top.map(([w, n]) => el("span", {}, w + " · ", num(n))));
+}
+
+// two-step delete (no browser pop-up)
+function deleteButton(o) {
+  let armed = false;
+  const b = el("button", { type: "button", class: "del", text: t().del });
+  b.addEventListener("click", async () => {
+    if (!armed) { armed = true; b.textContent = t().delSure; setTimeout(() => { armed = false; b.textContent = t().del; }, 4000); return; }
+    const { error } = await db.from("orders").delete().eq("id", o.id);
+    if (error) { toast(t().saveFail + error.message); return; }
+    orders = orders.filter(x => x.id !== o.id);
+    toast(t().deleted);
+    history.replaceState(null, "", location.pathname); route();
+  });
+  return b;
+}
+
+const FIELD_LABEL = () => ({
+  customer_name: t().c_name, phone: t().f_phone, wilaya: t().f_wilaya, commune: t().f_commune, delivery_type: t().f_delivery,
+  address: t().f_address, quantity: t().c_qty, total_price: t().c_total, status: t().status, tracking_number: t().tracking, notes: t().notes,
+});
+function showValue(key, v) {
+  if (v === null || v === undefined || v === "") return "—";
+  if (key === "status") return t().s[v] || v;
+  if (key === "delivery_type") return v === "desk" ? t().desk : t().home;
+  return String(v);
+}
+function logLine(log, withOrder) {
+  const who = log.actor === "website" ? t().byWebsite : log.actor.replace(/@nexora\.dz$/, "");
+  const li = el("li", { class: log.action });
+  const head = el("div", {}, el("b", { text: who }), " " + t()["a_" + log.action]);
+  if (withOrder) {
+    head.append(" ", orders.some(o => o.id === log.order_id)
+      ? el("a", { class: "act-link", text: "#" + log.order_id, onclick: () => { location.hash = "o=" + log.order_id; } })
+      : num("#" + log.order_id));
+    if (log.action === "deleted" && log.changes.customer_name) head.append(` (${t().deletedOrder}: ${log.changes.customer_name} · ${log.changes.phone})`);
+  }
+  li.append(head);
+  if (log.action === "updated") {
+    const labels = FIELD_LABEL();
+    Object.entries(log.changes).forEach(([k, c]) =>
+      li.append(el("span", { class: "chg", dir: "auto", text: `${labels[k] || k}: ${showValue(k, c.from)} → ${showValue(k, c.to)}` })));
+  }
+  li.append(el("div", { class: "meta" }, num(when(log.created_at))));
+  return li;
+}
+
+function renderDetailExtras(o, box) {
+  const earlier = orders.filter(x => x.phone === o.phone && x.id !== o.id).length;
+  box.append(el("div", { class: "panel" }, el("p", { class: earlier ? "repeat warn" : "repeat", text: earlier ? t().repeat(earlier) : t().firstOrder })));
+
+  // full edit: customer details, quantity and amount
+  const f = {};
+  const field = (key, input, full) => {
+    f[key] = input; input.id = "e-" + key;
+    return el("div", full ? { class: "full" } : {}, el("label", { for: input.id, text: FIELD_LABEL()[key] }), input);
+  };
+  const inp = (key, attrs = {}) => el("input", { value: o[key] ?? "", ...attrs });
+  const dsel = el("select", {});
+  [["home", t().homeLong], ["desk", t().deskLong]].forEach(([v, label]) => { const op = new Option(label, v); op.selected = o.delivery_type === v; dsel.add(op); });
+  const qty = inp("quantity", { type: "number", min: "1", inputmode: "numeric" });
+  const amount = el("input", { value: totalOf(o), type: "number", min: "0", inputmode: "numeric" });
+  // changing the quantity proposes the standard price; the amount can still be typed by hand
+  qty.addEventListener("input", () => { if (PRICES[Number(qty.value)]) amount.value = PRICES[Number(qty.value)]; });
+  const msg = el("div", { class: "saved", role: "status" });
+  const saveBtn = el("button", { type: "button", class: "btn", text: t().editSave });
+  saveBtn.addEventListener("click", async () => {
+    const phone = f.phone.value.trim();
+    const q = Number(qty.value), total = Number(amount.value);
+    if (!/^0[567]\d{8}$/.test(phone)) { msg.className = "saved err"; msg.textContent = t().badPhone; return; }
+    if (!Number.isInteger(q) || q < 1 || !Number.isFinite(total) || total < 0) { msg.className = "saved err"; msg.textContent = t().badQty; return; }
+    saveBtn.disabled = true;
+    const ok = await save(o, {
+      customer_name: f.customer_name.value.trim(), phone, wilaya: f.wilaya.value.trim(), commune: f.commune.value.trim(),
+      delivery_type: dsel.value, address: dsel.value === "desk" ? "" : f.address.value.trim(), quantity: q, total_price: Math.round(total),
+    }, msg);
+    saveBtn.disabled = false;
+    if (ok) renderDetail(o.id);
+  });
+  box.append(el("div", { class: "panel" },
+    el("h3", { text: t().editTitle }),
+    el("div", { class: "edit" },
+      field("customer_name", inp("customer_name")), field("phone", inp("phone", { dir: "ltr", inputmode: "tel" })),
+      field("wilaya", inp("wilaya")), field("commune", inp("commune")),
+      field("delivery_type", dsel), field("quantity", qty),
+      field("address", inp("address"), true), field("total_price", amount)),
+    el("div", { class: "row-btns" }, saveBtn, msg)));
+
+  // history of this order
+  const list = el("ul", { class: "hist" });
+  box.append(el("div", { class: "panel" }, el("h3", { text: t().histTitle }), list));
+  db.from("order_logs").select("*").eq("order_id", o.id).order("created_at", { ascending: false }).then(({ data, error }) => {
+    if (error) { list.replaceWith(el("p", { class: "muted", text: t().noLogs })); return; }
+    if (!data.length) { list.replaceWith(el("p", { class: "muted", text: t().actEmpty })); return; }
+    data.forEach(l => list.append(logLine(l, false)));
+  });
+}
+
+async function renderActivity() {
+  const box = $("#activity");
+  box.textContent = "";
+  const list = el("ul", { class: "hist" });
+  box.append(el("div", { class: "panel" }, el("h2", { text: t().actTitle }), el("p", { class: "muted", text: t().actSub }), list));
+
+  const left = orders.length;
+  let armed = false;
+  const resetBtn = el("button", { type: "button", class: "btn", text: left ? t().resetBlocked(left) : t().resetBtn });
+  resetBtn.disabled = left > 0;
+  resetBtn.addEventListener("click", async () => {
+    if (!armed) { armed = true; resetBtn.textContent = t().resetSure; setTimeout(() => { armed = false; resetBtn.textContent = t().resetBtn; }, 4000); return; }
+    const { error } = await db.rpc("reset_order_numbering");
+    toast(error ? t().saveFail + error.message : t().resetDone);
+    armed = false; resetBtn.textContent = t().resetBtn;
+  });
+  box.append(el("div", { class: "panel danger" }, el("h3", { text: t().resetTitle }), el("p", { class: "muted", text: t().resetHint }), resetBtn));
+
+  const { data, error } = await db.from("order_logs").select("*").order("created_at", { ascending: false }).limit(300);
+  if (error) { list.replaceWith(el("p", { class: "muted", text: t().noLogs })); return; }
+  if (!data.length) { list.replaceWith(el("p", { class: "muted", text: t().actEmpty })); return; }
+  data.forEach(l => list.append(logLine(l, true)));
 }
 
 applyLang();
