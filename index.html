@@ -373,12 +373,7 @@
         </div>
         <p class="hint" id="desk-note" hidden>سنرسل طلبك إلى أقرب مكتب توصيل في بلديتك، ونؤكد معك المكتب عند الاتصال.</p>
 
-        <label for="offer">اختر العرض</label>
-        <select id="offer" name="offer">
-          <option value="duo" selected>علبة زوج تورشات مع لوازمهم — 6500 دج</option>
-          <option value="single">تورش واحدة مع بطارية وكابل شحن — 3700 دج</option>
-        </select>
-        <label for="quantity" id="quantity-label">عدد العلب</label>
+        <label for="quantity" id="quantity-label">الكمية</label>
         <select id="quantity" name="quantity" aria-describedby="quantity-hint"></select>
         <p class="hint" id="quantity-hint"></p>
 
@@ -550,22 +545,15 @@ IMAGES.forEach((name, i) => {
 /* ---------- prices ---------- */
 const form = $("#order-form");
 const qtySel = $("#quantity");
-const offerSel = $("#offer");
-const isDuo = () => offerSel.value === "duo";
-// The API and admin still count flashlights, not boxes: 1 box sends quantity 2.
+// The customer picks how many flashlights (1 to 5); each comes with its battery and charging cable.
 function populateQuantities() {
-  const duo = isDuo();
   qtySel.textContent = "";
-  const quantities = duo ? QTYS.filter(q => q % 2 === 0) : [1];
-  quantities.forEach(q => {
+  QTYS.forEach(q => {
     const o = document.createElement("option");
     o.value = q;
-    o.textContent = duo
-      ? `${q / 2} علبة — ${q} تورشات — ${fmt(priceFor(q))} دج`
-      : `1 تورش — ${fmt(priceFor(q))} دج`;
+    o.textContent = `${q} ${q === 1 ? "تورش" : "تورشات"} — ${fmt(priceFor(q))} دج`;
     qtySel.appendChild(o);
   });
-  $("#quantity-label").textContent = duo ? "عدد العلب" : "الكمية";
 }
 populateQuantities();
 $("#price-now").textContent = fmt(CONFIG.PRICES[2]);
@@ -581,11 +569,11 @@ function updateSummary() {
   const q = Number(qtySel.value) || 1;
   const items = priceFor(q);
   const save = UNIT * q - items;
-  const content = isDuo() ? `${q / 2} علبة · ${q} تورشات` : "تورش واحدة";
+  const content = q === 1 ? "تورش واحدة" : `${q} تورشات`;
   $("#sum-content").textContent = content;
-  $("#quantity-hint").textContent = isDuo()
-    ? `طلبك: ${q / 2} علبة، فيها ${q} تورشات + ${q} بطاريات + ${q} كابلات شحن.`
-    : "طلبك: تورش واحدة + بطارية واحدة + كابل شحن واحد.";
+  $("#quantity-hint").textContent = q === 1
+    ? "طلبك: تورش واحدة + بطارية واحدة + كابل شحن واحد."
+    : `طلبك: ${q} تورشات + ${q} بطاريات + ${q} كابلات شحن.`;
   $("#sum-items").innerHTML = money(items);
   $("#sum-save-row").hidden = save <= 0;
   $("#sum-save").innerHTML = money(save);
@@ -599,17 +587,6 @@ function updateSummary() {
 }
 updateSummary();
 qtySel.addEventListener("change", updateSummary);
-offerSel.addEventListener("change", () => {
-  populateQuantities();
-  updateSummary();
-  mainImg.src = isDuo() ? "images/dual-cover-v2.webp" : "images/torch-4.webp";
-  const imageIndex = isDuo() ? 0 : 2;
-  mainImg.alt = ALTS[imageIndex];
-  thumbs.querySelectorAll("button").forEach((button, i) => {
-    if (i === imageIndex) button.setAttribute("aria-current", "true");
-    else button.removeAttribute("aria-current");
-  });
-});
 
 /* ---------- wilaya → commune (reactive) ---------- */
 const wilayaSel = $("#wilaya");
