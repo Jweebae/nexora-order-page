@@ -138,6 +138,7 @@
       <nav class="nav" id="nav" hidden>
         <a href="#" id="nav-orders" data-t="navOrders"></a>
         <a href="#activity" id="nav-activity" data-t="navActivity"></a>
+        <a href="#admins" id="nav-admins" data-t="navAdmins"></a>
       </nav>
       <div class="langs" role="group" aria-label="Language">
         <button type="button" data-lang="ar">AR</button>
@@ -202,6 +203,11 @@
 <!-- ============ ONE ORDER ============ -->
 <main class="wrap" id="detail-view" hidden>
   <div class="detail" id="detail"></div>
+</main>
+
+<!-- ============ ADMINS ============ -->
+<main class="wrap" id="admins-view" hidden>
+  <div id="admins"></div>
 </main>
 
 <!-- ============ ACTIVITY ============ -->
@@ -300,6 +306,7 @@ if (!T[lang]) lang = "ar";
 const USER_DOMAIN = "@nexora.dz";   // a username without "@" signs in as username@nexora.dz
 /* Texts for navigation, editing, deleting, history and the activity log. */
 Object.assign(T.ar, {
+  navAdmins: "المشرفون", adminsTitle: "حسابات الإدارة", adminsSub: "كل مشرف يمكنه إضافة مشرفين أو حذفهم.", you: "(أنت)", remove: "حذف", removeSure: "اضغط للتأكيد", removed: "تم حذف المشرف", addTitle: "إضافة مشرف", username: "اسم المستخدم", addBtn: "إضافة", added: e => `تمت إضافة ${e}`, adminLog: "سجل المشرفين", l_admin_added: "أضاف المشرف", l_admin_removed: "حذف المشرف", noAdminsDb: "إدارة المشرفين غير مفعّلة بعد في قاعدة البيانات.", pwHint: "8 أحرف على الأقل. يدخل المشرف باسم المستخدم فقط.",
   navOrders: "الطلبات", navActivity: "السجل", export: "تصدير CSV",
   del: "🗑 حذف الطلب", delSure: "اضغط مرة أخرى للتأكيد", deleted: "تم حذف الطلب",
   actTitle: "سجل النشاط", actSub: "كل عملية على الطلبات: من قام بها ومتى.", actEmpty: "لا يوجد نشاط بعد.",
@@ -313,6 +320,7 @@ Object.assign(T.ar, {
   badPhone: "رقم الهاتف غير صحيح", badQty: "الكمية أو المبلغ غير صحيح",
 });
 Object.assign(T.fr, {
+  navAdmins: "Admins", adminsTitle: "Comptes administrateurs", adminsSub: "Chaque admin peut ajouter ou supprimer des admins.", you: "(vous)", remove: "Supprimer", removeSure: "Cliquez pour confirmer", removed: "Admin supprimé", addTitle: "Ajouter un admin", username: "Nom d'utilisateur", addBtn: "Ajouter", added: e => `${e} ajouté`, adminLog: "Historique des admins", l_admin_added: "a ajouté l'admin", l_admin_removed: "a supprimé l'admin", noAdminsDb: "La gestion des admins n'est pas encore activée dans la base.", pwHint: "8 caractères minimum. L'admin se connecte avec son nom d'utilisateur.",
   navOrders: "Commandes", navActivity: "Historique", export: "Exporter CSV",
   del: "🗑 Supprimer", delSure: "Cliquez encore pour confirmer", deleted: "Commande supprimée",
   actTitle: "Historique d'activité", actSub: "Chaque action sur les commandes : qui et quand.", actEmpty: "Aucune activité pour le moment.",
@@ -326,6 +334,7 @@ Object.assign(T.fr, {
   badPhone: "Numéro invalide", badQty: "Quantité ou montant invalide",
 });
 Object.assign(T.en, {
+  navAdmins: "Admins", adminsTitle: "Admin accounts", adminsSub: "Every admin can add or remove admins.", you: "(you)", remove: "Remove", removeSure: "Click to confirm", removed: "Admin removed", addTitle: "Add an admin", username: "Username", addBtn: "Add", added: e => `${e} added`, adminLog: "Admin log", l_admin_added: "added admin", l_admin_removed: "removed admin", noAdminsDb: "Admin management is not switched on in the database yet.", pwHint: "At least 8 characters. The admin signs in with the username only.",
   navOrders: "Orders", navActivity: "Activity", export: "Export CSV",
   del: "🗑 Delete order", delSure: "Click again to confirm", deleted: "Order deleted",
   actTitle: "Activity log", actSub: "Every action on orders: who did it and when.", actEmpty: "No activity yet.",
@@ -400,6 +409,8 @@ function showView(v) {
   $("#list-view").hidden = v !== "list";
   $("#detail-view").hidden = v !== "detail";
   $("#activity-view").hidden = v !== "activity";
+  $("#admins-view").hidden = v !== "admins";
+  $("#nav-admins").toggleAttribute("aria-current", v === "admins");
   $("#refresh").hidden = $("#logout").hidden = $("#nav").hidden = v === "login";
   $("#nav-orders").toggleAttribute("aria-current", v === "list" || v === "detail");
   $("#nav-activity").toggleAttribute("aria-current", v === "activity");
@@ -409,6 +420,7 @@ function route() {
   const m = /^#o=(\d+)$/.exec(location.hash);
   if (m) { showView("detail"); renderDetail(Number(m[1])); window.scrollTo(0, 0); }
   else if (location.hash === "#activity") { showView("activity"); renderActivity(); }
+  else if (location.hash === "#admins") { showView("admins"); renderAdmins(); }
   else { showView("list"); renderList(); }
 }
 window.addEventListener("hashchange", route);
@@ -765,6 +777,59 @@ async function renderActivity() {
   if (error) { list.replaceWith(el("p", { class: "muted", text: t().noLogs })); return; }
   if (!data.length) { list.replaceWith(el("p", { class: "muted", text: t().actEmpty })); return; }
   data.forEach(l => list.append(logLine(l, true)));
+}
+
+async function renderAdmins() {
+  const box = $("#admins");
+  box.textContent = "";
+  const short = e => e.replace(/@nexora\.dz$/, "");
+  const list = el("ul", { class: "hist" });
+  const panel = el("div", { class: "panel" }, el("h2", { text: t().adminsTitle }), el("p", { class: "muted", text: t().adminsSub }), list);
+  box.append(panel);
+
+  const { data: admins, error } = await db.rpc("admin_list");
+  if (error) { list.replaceWith(el("p", { class: "muted", text: t().noAdminsDb })); return; }
+  admins.forEach(a => {
+    let armed = false;
+    const rm = el("button", { type: "button", class: "del", text: t().remove });
+    rm.addEventListener("click", async () => {
+      if (!armed) { armed = true; rm.textContent = t().removeSure; setTimeout(() => { armed = false; rm.textContent = t().remove; }, 4000); return; }
+      const { error } = await db.rpc("admin_remove", { p_email: a.email });
+      toast(error ? t().saveFail + error.message : t().removed);
+      renderAdmins();
+    });
+    list.append(el("li", {}, el("div", { class: "row-btns", style: "margin:0" },
+      el("b", { text: short(a.email) }), a.is_me ? el("span", { class: "muted", text: t().you }) : rm)));
+  });
+
+  // add an admin
+  const user = el("input", { id: "a-user", dir: "ltr", autocomplete: "off" });
+  const pass = el("input", { id: "a-pass", type: "text", dir: "ltr", autocomplete: "new-password" });
+  const msg = el("div", { class: "saved", role: "status" });
+  const add = el("button", { type: "button", class: "btn", text: t().addBtn });
+  add.addEventListener("click", async () => {
+    add.disabled = true;
+    const { data, error } = await db.rpc("admin_add", { p_username: user.value, p_password: pass.value });
+    add.disabled = false;
+    if (error) { msg.className = "saved err"; msg.textContent = t().saveFail + error.message; return; }
+    toast(t().added(short(data)));
+    renderAdmins();
+  });
+  box.append(el("div", { class: "panel" }, el("h3", { text: t().addTitle }),
+    el("div", { class: "edit" },
+      el("div", {}, el("label", { for: "a-user", text: t().username }), user),
+      el("div", {}, el("label", { for: "a-pass", text: t().password }), pass)),
+    el("p", { class: "muted", text: t().pwHint }),
+    el("div", { class: "row-btns" }, add, msg)));
+
+  // who added or removed whom
+  const logs = el("ul", { class: "hist" });
+  box.append(el("div", { class: "panel" }, el("h3", { text: t().adminLog }), logs));
+  const { data: rows } = await db.from("admin_logs").select("*").order("created_at", { ascending: false }).limit(100);
+  if (!rows || !rows.length) { logs.replaceWith(el("p", { class: "muted", text: t().actEmpty })); return; }
+  rows.forEach(r => logs.append(el("li", { class: r.action === "admin_removed" ? "deleted" : "created" },
+    el("div", {}, el("b", { text: short(r.actor) }), ` ${t()["l_" + r.action]} `, el("b", { text: short(r.target) })),
+    el("div", { class: "meta" }, num(when(r.created_at))))));
 }
 
 applyLang();
